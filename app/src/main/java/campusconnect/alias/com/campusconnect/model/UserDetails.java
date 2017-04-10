@@ -1,10 +1,8 @@
 package campusconnect.alias.com.campusconnect.model;
 
-/**
- * Created by alias on 4/9/2017.
- */
-
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -16,9 +14,8 @@ public class UserDetails {
     private String password;
     private Set<Subject> subjectList = new HashSet<>();
     private Set<Module> moduleCompleted = new HashSet<>();
-    private Set<Request> reqSent = new HashSet<>();
-    private Set<Request> reqReceived = new HashSet<>();
-    //@Embedded
+    Set<Request> reqSent = new HashSet<>();
+    Set<Request> reqReceived = new HashSet<>();
     //private ChatDetails chatDetails = new ChatDetails();
 
     public UserDetails(){}
@@ -26,71 +23,37 @@ public class UserDetails {
     //Getters and Setters
 
     //UserID
-    public int getUserId() {
-        return userId;
-    }
+    public int getUserId() { return userId;}
+    public void setUserId(int userId) { this.userId = userId; }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
     //UserName
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(@NotNull String userName) {
-        this.userName = userName;
-    }
+    public String getUserName() {return userName;}
+    public void setUserName(String userName) {this.userName = userName;}
 
     //Email
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getEmail() { return email;}
+    public void setEmail(String email) {this.email = email;}
 
     //Password
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public String getPassword() {return password;}
+    public void setPassword(String password) {this.password = password;}
 
     //	SubjectList
-    public Set<Subject> getSubjectList() {
-        return subjectList;
-    }
-    public void setSubjectList(Set<Subject> subjectList) {
-        this.subjectList = subjectList;
-    }
+    public Set<Subject> getSubjectList() {return subjectList;}
+    public void setSubjectList(Set<Subject> subjectList) {this.subjectList = subjectList;}
 
-    public Set<Request> getReqSent() {
-        return reqSent;
-    }
+    // Sent Request
+    public Set<Request> getReqSent() {return reqSent;}
+    public void setReqSent(Set<Request> reqSent) {this.reqSent = reqSent;}
 
-    public void setReqSent(Set<Request> reqSent) {
-        this.reqSent = reqSent;
-    }
+    // Received Request
+    public Set<Request> getReqReceived() {return reqReceived;}
+    public void setReqReceived(Set<Request> reqReceived) {this.reqReceived = reqReceived;}
 
-    public Set<Request> getReqReceived() {
-        return reqReceived;
-    }
+    // Module Completed
+    public Set<Module> getModuleCompleted() {return moduleCompleted;}
+    public void setModuleCompleted(Set<Module> moduleCompleted) {this.moduleCompleted = moduleCompleted;}
 
-    public void setReqReceived(Set<Request> reqReceived) {
-        this.reqReceived = reqReceived;
-    }
-
-    public Set<Module> getModuleCompleted() {
-        return moduleCompleted;
-    }
-
-    public void setModuleCompleted(Set<Module> moduleCompleted) {
-        this.moduleCompleted = moduleCompleted;
-    }
 
     //ChatDetails
 //	public ChatDetails getChatDetails() {
@@ -103,4 +66,3 @@ public class UserDetails {
 
 
 }
-
