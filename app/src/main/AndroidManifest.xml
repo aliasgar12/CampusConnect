@@ -9,13 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DashboardActivity">
+        <activity android:name=".ui.DashboardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.RegistrationActivity" />
+        <activity android:name=".ui.AddCourseActivity" />
+        <activity android:name=".ui.RecievedRequest" />
+        <activity android:name=".ui.SentRequest" />
+        <activity android:name=".ui.ModuleListActivity" />
+        <activity android:name=".ui.StudentListActivity" />
+        <activity android:name=".ui.ChatRoomActivity"></activity>
     </application>
 
 </manifest>
