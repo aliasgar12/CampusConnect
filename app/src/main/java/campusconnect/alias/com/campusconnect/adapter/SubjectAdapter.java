@@ -1,17 +1,37 @@
 package campusconnect.alias.com.campusconnect.adapter;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.model.Subject;
+import campusconnect.alias.com.campusconnect.ui.DashboardActivity;
 
 /**
  * Created by alias on 4/10/2017.
  */
 
-public class SubjectAdapter extends BaseAdapter {
+    public class SubjectAdapter extends BaseAdapter {
+
+    private DashboardActivity dashboardActivity;
+    private ArrayList<Subject> subjectList;
+
+    public SubjectAdapter(DashboardActivity dashboardActivity, ArrayList<Subject> subjectList) {
+        this.dashboardActivity = dashboardActivity;
+        this.subjectList= subjectList;
+    }
+
     @Override
     public int getCount() {
-        return 0;
+        return subjectList.size();
     }
 
     @Override
@@ -26,6 +46,17 @@ public class SubjectAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+
+        Subject subject = subjectList.get(position);
+        int crn = subject.getSubjectCRN();
+        String subjectName = subject.getSubjectName();
+
+        View view = LayoutInflater.from(dashboardActivity).inflate(R.layout.list_subject,null);
+        TextView crnTextView = (TextView)view.findViewById(R.id.item_subject_crn);
+        TextView subjectTextView = (TextView)view.findViewById(R.id.item_subject_name);
+        crnTextView.setText(String.valueOf(crn));
+        subjectTextView.setText(subjectName);
+
+        return view;
     }
 }

@@ -8,6 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,8 +25,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.adapter.SubjectAdapter;
+import campusconnect.alias.com.campusconnect.model.Subject;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -28,7 +39,9 @@ public class DashboardActivity extends AppCompatActivity {
     private ListView listSubject;
     private Button button;
     private static final String URL =
-            "http://10.0.2.2:8080/StudyConnect/webapi/user/4512783/subject";
+            "http://10.0.2.2:8080/StudyConnect/webapi/user/4590583/subject";
+    private ArrayList<Subject> subList;
+    private SubjectAdapter subjectAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +53,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         listSubject = (ListView) findViewById(R.id.listSubject);
         button = (Button) findViewById(R.id.fetch_subject_button);
+        subList = new ArrayList<Subject>();
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,32 +104,35 @@ public class DashboardActivity extends AppCompatActivity {
         protected void onPostExecute(String response) {
 
             if(response!=null){
-//                parseJsonResponse(response);
+                parseJsonResponse(response);
             System.out.println(response);
             }
         }
     }
 
-//    private void parseJsonResponse(String response) {
-//        try {
-//            JSONObject jsonObject = new JSONObject(response);
-//            JSONArray bookArray = jsonObject.getJSONArray("bookstore");
-//
-//            for (int i = 0; i < bookArray.length(); i++) {
-//                JSONObject bookObject = bookArray.getJSONObject(i);
-//
-//                String name = bookObject.getString("name");
-//                String author = bookObject.getString("author");
-//                String price = bookObject.getString("price");
-//
-//                books.add(new Book(name, author, price));
-//            }
-//
-//            booksAdapter = new BookAdapter(MainActivity.this, books);
-//            mViews.bookList.setAdapter(booksAdapter);
-//            mViews.bookList.setVisibility(View.VISIBLE);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void parseJsonResponse(String response) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+            TypeReference<List<Subject>> mapType = new TypeReference<List<Subject>>() {};
+            List<Subject> subjectList = objectMapper.readValue(response, mapType);
+            System.out.println("Length of the list : " + subjectList.size());
+            for (int i = 0; i < subjectList.size(); i++) {
+                Subject subjectObject = subjectList.get(i);
+
+                int crn = subjectObject.getSubjectCRN();
+                String subjectName = subjectObject.getSubjectName();
+                subList.add(new Subject(crn, subjectName));
+            }
+            subjectAdapter = new SubjectAdapter(DashboardActivity.this,subList);
+            listSubject.setAdapter(subjectAdapter);
+            listSubject.setVisibility(View.VISIBLE);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

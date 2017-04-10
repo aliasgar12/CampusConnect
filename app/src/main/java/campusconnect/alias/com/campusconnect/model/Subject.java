@@ -21,6 +21,10 @@ public class Subject implements Serializable{
 
 	public Subject() {}
 
+    public Subject(int subjectCRN, String subjectName){
+        this.subjectCRN = subjectCRN;
+        this.subjectName = subjectName;
+    }
 
 	//Getters and Setters
 	
