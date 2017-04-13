@@ -1,9 +1,11 @@
 package campusconnect.alias.com.campusconnect.model;
 
+import org.parceler.Parcel;
+
 import java.util.HashSet;
 import java.util.Set;
 
-
+@Parcel
 public class Module {
 
 	private int moduleId;

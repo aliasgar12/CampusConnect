@@ -1,14 +1,12 @@
 package campusconnect.alias.com.campusconnect.model;
 
+import org.parceler.Parcel;
+
 import java.io.Serializable;
 
+@Parcel
+public class RequestId{
 
-public class RequestId implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private int subjectCRN;
 	private int fromUserId;
 	private int toUserId;

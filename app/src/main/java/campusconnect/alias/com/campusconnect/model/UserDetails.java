@@ -1,11 +1,13 @@
 package campusconnect.alias.com.campusconnect.model;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+@Parcel
 public class UserDetails {
 
     private int userId;
@@ -14,11 +16,18 @@ public class UserDetails {
     private String password;
     private Set<Subject> subjectList = new HashSet<>();
     private Set<Module> moduleCompleted = new HashSet<>();
-    Set<Request> reqSent = new HashSet<>();
-    Set<Request> reqReceived = new HashSet<>();
+    private Set<Request> reqSent = new HashSet<>();
+    private Set<Request> reqReceived = new HashSet<>();
     //private ChatDetails chatDetails = new ChatDetails();
 
     public UserDetails(){}
+
+    public UserDetails(int id, String name , String email, String password){
+        this.userId = id;
+        this.userName = name;
+        this.email = email;
+        this.password = password;
+    }
 
     //Getters and Setters
 

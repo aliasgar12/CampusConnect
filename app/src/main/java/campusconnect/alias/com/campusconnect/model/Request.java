@@ -1,6 +1,8 @@
 package campusconnect.alias.com.campusconnect.model;
 
+import org.parceler.Parcel;
 
+@Parcel
 public class Request {
 
 	private RequestId requestId;

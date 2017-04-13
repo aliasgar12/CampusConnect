@@ -1,15 +1,18 @@
 package campusconnect.alias.com.campusconnect.ui;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,6 +20,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +39,7 @@ import campusconnect.alias.com.campusconnect.model.Subject;
 
 public class DashboardActivity extends AppCompatActivity {
 
+    private static final String TAG = "DashboardActivity";
     private Toolbar toolbar;
     private ListView listSubject;
     private Button button;
@@ -55,6 +60,12 @@ public class DashboardActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.fetch_subject_button);
         subList = new ArrayList<Subject>();
 
+        Intent intent = getIntent();
+        int uid = intent.getIntExtra("uid", 0);
+        Set<Subject> subjectList = Parcels.unwrap(getIntent().getParcelableExtra("subjectList"));
+        Log.i(TAG, "User id = " + uid);
+        Log.i(TAG, subjectList.toString());
+        subList = new ArrayList<>(subjectList);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,6 +125,7 @@ public class DashboardActivity extends AppCompatActivity {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             TypeReference<List<Subject>> mapType = new TypeReference<List<Subject>>() {};
             List<Subject> subjectList = objectMapper.readValue(response, mapType);
             System.out.println("Length of the list : " + subjectList.size());
@@ -122,7 +134,7 @@ public class DashboardActivity extends AppCompatActivity {
 
                 int crn = subjectObject.getSubjectCRN();
                 String subjectName = subjectObject.getSubjectName();
-                subList.add(new Subject(crn, subjectName));
+//                subList.add(new Subject(crn, subjectName));
             }
             subjectAdapter = new SubjectAdapter(DashboardActivity.this,subList);
             listSubject.setAdapter(subjectAdapter);
