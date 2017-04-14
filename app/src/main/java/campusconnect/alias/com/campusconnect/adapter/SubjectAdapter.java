@@ -26,6 +26,16 @@ import campusconnect.alias.com.campusconnect.ui.DashboardActivity;
 
     private DashboardActivity dashboardActivity;
     private ArrayList<Subject> subjectList;
+    private ItemClickCallback itemClickCallback;
+
+    public interface ItemClickCallback{
+        void OnItemClick(int p);
+        void OnDeleteItemClick(int p);
+    }
+
+    public void setItemClickCallback(ItemClickCallback itemClickCallback){
+        this.itemClickCallback = itemClickCallback;
+    }
 
     public SubjectAdapter(DashboardActivity dashboardActivity, ArrayList<Subject> subjectList){
         this.dashboardActivity = dashboardActivity;
@@ -76,10 +86,13 @@ import campusconnect.alias.com.campusconnect.ui.DashboardActivity;
 
         @Override
         public void onClick(View v) {
-            if(v.getId()== R.id.cont_root){
-
-            }else{
-                
+            if(v.getId()== R.id.item_subject_name){
+            itemClickCallback.OnItemClick(getAdapterPosition());
+            }else if(v.getId()== R.id.item_icon_delete){
+                itemClickCallback.OnDeleteItemClick(getAdapterPosition());
+                notifyDataSetChanged();
+                notifyItemRemoved(getAdapterPosition());
+                notifyItemRangeChanged(getAdapterPosition(), subjectList.size());
             }
         }
     }

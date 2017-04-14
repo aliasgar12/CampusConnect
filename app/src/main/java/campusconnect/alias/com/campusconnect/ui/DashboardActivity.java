@@ -1,7 +1,6 @@
 package campusconnect.alias.com.campusconnect.ui;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,40 +9,22 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.Toast;
 import org.parceler.Parcels;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.SubjectAdapter;
 import campusconnect.alias.com.campusconnect.model.Subject;
+import campusconnect.alias.com.campusconnect.web.services.SubjectService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-import static android.R.attr.button;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity implements SubjectAdapter.ItemClickCallback{
 
     private static final String TAG = "DashboardActivity";
     private ArrayList<Subject> subList;
@@ -53,6 +34,7 @@ public class DashboardActivity extends AppCompatActivity {
     @BindView(R.id.listSubject) RecyclerView recyclerView;
     @BindView(R.id.toolbar) Toolbar toolbar;
     private LinearLayoutManager linearLayoutManager;
+    private static int uid;
 
 
     @Override
@@ -66,7 +48,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         // get intent values from previous activity
         Intent intent = getIntent();
-        int uid = intent.getIntExtra("uid", 0);
+        uid = intent.getIntExtra("uid", 0);
         Set<Subject> subjectList = Parcels.unwrap(getIntent().getParcelableExtra("subjectList"));
         subList = new ArrayList<>(subjectList);
         Log.i(TAG, "Getting the subject list");
@@ -91,13 +73,40 @@ public class DashboardActivity extends AppCompatActivity {
         subjectAdapter = new SubjectAdapter(this,subList);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-
         recyclerView.setAdapter(subjectAdapter);
+        subjectAdapter.setItemClickCallback(this);
 
 
     }
 
 
+    @Override
+    public void OnItemClick(int p) {
+        Intent intent = new Intent(DashboardActivity.this, ModuleListActivity.class);
+        intent.putExtra("subjectId", subList.get(p).getSubjectCRN());
+        intent.putExtra("userId",uid);
+        startActivity(intent);
+    }
 
+    @Override
+    public void OnDeleteItemClick(int p) {
+        Subject subRemoved = subList.remove(p);
+        updatedb(uid, subRemoved);
+    }
 
+    private void updatedb(int uid, final Subject subRemoved) {
+
+        SubjectService.Factory.getInstance().deleteSubject(uid, subRemoved).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i(TAG, "Subject Removed" + subRemoved.getSubjectName());
+                Toast.makeText(getBaseContext(),"Subject Deleted" + subRemoved.getSubjectName(),Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Could not connect to REST server");
+            }
+        });
+    }
 }
