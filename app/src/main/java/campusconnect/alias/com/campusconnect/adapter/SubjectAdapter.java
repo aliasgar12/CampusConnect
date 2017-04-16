@@ -44,7 +44,7 @@ import campusconnect.alias.com.campusconnect.ui.DashboardActivity;
 
     @Override
     public SubjectAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(dashboardActivity).inflate(R.layout.list_subject,parent, false);
+        View v = LayoutInflater.from(dashboardActivity).inflate(R.layout.item_subject,parent, false);
         return new ViewHolder(v);
     }
 

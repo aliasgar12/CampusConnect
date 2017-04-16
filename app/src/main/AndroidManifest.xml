@@ -23,7 +23,7 @@
         <activity android:name=".ui.AddCourseActivity" />
         <activity android:name=".ui.RecievedRequest" />
         <activity android:name=".ui.SentRequest" />
-        <activity android:name=".ui.ModuleListActivity" />
+        <activity android:name=".ui.ModuleActivity" />
         <activity android:name=".ui.StudentListActivity" />
         <activity android:name=".ui.ChatRoomActivity"></activity>
     </application>

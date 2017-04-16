@@ -1,11 +1,15 @@
 package campusconnect.alias.com.campusconnect.web.services;
 
+import java.util.HashSet;
+import java.util.List;
+
 import campusconnect.alias.com.campusconnect.model.Module;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -15,10 +19,10 @@ import retrofit2.http.Path;
 
 public interface ModuleService {
 
-    String BASE_URL = "http://10.0.2.2:8080/StudyConnect/webapi/";
+    String BASE_URL = "http://10.0.2.2:8080/StudyConnect/webapi/user/";
 
-    @POST("{userId}/subject/{subjectId}")
-    Call<Module> getModules(@Path("userId") int id, @Path("subjectId") int subId );
+    @GET("{userId}/subject/{subjectId}")
+    Call<HashSet<Module>> getModules(@Path("userId") int id, @Path("subjectId") int subId );
 
 
     class Factory {

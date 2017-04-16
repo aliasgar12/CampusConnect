@@ -82,7 +82,7 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
 
     @Override
     public void OnItemClick(int p) {
-        Intent intent = new Intent(DashboardActivity.this, ModuleListActivity.class);
+        Intent intent = new Intent(DashboardActivity.this, ModuleActivity.class);
         intent.putExtra("subjectId", subList.get(p).getSubjectCRN());
         intent.putExtra("userId",uid);
         startActivity(intent);

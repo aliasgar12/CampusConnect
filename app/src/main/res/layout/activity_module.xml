@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="campusconnect.alias.com.campusconnect.ui.ModuleListActivity">
+    tools:context="campusconnect.alias.com.campusconnect.ui.ModuleActivity">
 
     <include
         android:id="@+id/toolbar"
@@ -18,10 +18,11 @@
         android:id="@+id/name_module"
         android:text="Modules"
         android:textSize="40sp"
-        android:paddingStart="25dp"
-        android:paddingEnd="25dp"/>
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"/>
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/list_module"
         android:layout_below="@+id/name_module"
         android:layout_width="match_parent"
@@ -30,6 +31,6 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="16dp"
-        tools:context=".ui.ModuleListActivity" />
+        tools:context=".ui.ModuleActivity" />
 
 </RelativeLayout>

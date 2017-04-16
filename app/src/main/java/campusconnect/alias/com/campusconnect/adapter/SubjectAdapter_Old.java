@@ -51,7 +51,7 @@
 //        int crn = subject.getSubjectCRN();
 //        String subjectName = subject.getSubjectName();
 //
-//        View view = LayoutInflater.from(dashboardActivity).inflate(R.layout.list_subject,null);
+//        View view = LayoutInflater.from(dashboardActivity).inflate(R.layout.item_subject,null);
 //        TextView crnTextView = (TextView)view.findViewById(R.id.item_subject_crn);
 //        TextView subjectTextView = (TextView)view.findViewById(R.id.item_subject_name);
 //        crnTextView.setText(String.valueOf(crn));
