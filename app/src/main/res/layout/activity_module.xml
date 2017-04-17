@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="campusconnect.alias.com.campusconnect.ui.StudentActivity">
+    tools:context="campusconnect.alias.com.campusconnect.ui.ModuleActivity">
 
     <include
         android:id="@+id/toolbar"
@@ -15,22 +15,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
-        android:id="@+id/name_students"
-        android:text="Students Completed"
+        android:id="@+id/name_module"
+        android:text="Modules"
         android:textSize="40sp"
         android:gravity="center"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_student"
-        android:layout_below="@+id/name_students"
+        android:id="@+id/list_module"
+        android:layout_below="@+id/name_module"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="16dp"
-        tools:context=".ui.StudentActivity" />
+        tools:context=".ui.ModuleActivity" />
 
 </RelativeLayout>

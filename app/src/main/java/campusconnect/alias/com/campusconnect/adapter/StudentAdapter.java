@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import java.util.ArrayList;
+
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.ui.StudentActivity;
@@ -20,7 +22,7 @@ import campusconnect.alias.com.campusconnect.ui.StudentActivity;
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHolder>{
 
     private StudentActivity studentActivity;
-    private ArrayList<Student> studentList;
+    private ArrayList<UserDetails> studentList;
     private ItemClickCallback itemClickCallback;
 
     public interface ItemClickCallback{
@@ -32,7 +34,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         this.itemClickCallback = itemClickCallback;
     }
 
-    public StudentAdapter(StudentActivity studentActivity, ArrayList<Student> studentList){
+    public StudentAdapter(StudentActivity studentActivity, ArrayList<UserDetails> studentList){
         this.studentActivity = studentActivity;
         this.studentList = studentList;
     }
@@ -46,7 +48,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     @Override
     public void onBindViewHolder(StudentAdapter.ViewHolder holder, int position) {
         UserDetails student = studentList.get(position);
-        holder.studentName.setText(student.getStudentName());
+        holder.studentName.setText(student.getUserName());
     }
 
     @Override

@@ -15,14 +15,14 @@
         android:layout_marginRight="60dp"
         android:id="@+id/item_student_name"
         android:maxLines="1"
-        android:textSize="60dp"/>
+        android:textSize="40dp"/>
 
     <ImageView
         android:layout_width="60dp"
         android:layout_height="match_parent"
         android:id="@+id/item_icon_request"
         android:layout_alignParentRight="true"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_check_circle_white_36dp"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>

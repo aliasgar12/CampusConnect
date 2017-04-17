@@ -48,7 +48,6 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
         ButterKnife.bind(this);
 
         Log.i(TAG, "Redirected to Module acitvity");
-        Intent intent = getIntent();
         uid = getIntent().getIntExtra("userId", 0);
         subjectId = getIntent().getIntExtra("subjectId",0);
 //        Toast.makeText(getBaseContext(), "Subject id" + subjectId, Toast.LENGTH_LONG).show();
