@@ -1,6 +1,7 @@
 package campusconnect.alias.com.campusconnect.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.model.Module;
+import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.ui.ModuleActivity;
 
 /**
@@ -22,6 +25,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
     private ModuleActivity moduleActivity;
     private ArrayList<Module> moduleList;
     private ItemClickCallback itemClickCallback;
+    private int userId;
 
     public interface ItemClickCallback{
         void OnItemClick(int p);
@@ -32,9 +36,10 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
         this.itemClickCallback = itemClickCallback;
     }
 
-    public ModuleAdapter(ModuleActivity moduleActivity, ArrayList<Module> moduleList){
+    public ModuleAdapter(ModuleActivity moduleActivity, ArrayList<Module> moduleList, int userId){
         this.moduleActivity = moduleActivity;
         this.moduleList = moduleList;
+        this.userId = userId;
     }
 
     @Override
@@ -46,9 +51,21 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ModuleAdapter.ViewHolder holder, int position) {
         Module module = moduleList.get(position);
+        Set<UserDetails> userDetailsSet = module.getUser();
         holder.moduleName.setText(module.getModuleName());
         holder.moduleId.setText(String.valueOf(module.getModuleId()));
-
+        int count = 0;
+        for(UserDetails user: userDetailsSet) {
+            if (user.getUserId() == userId)
+                count++;
+        }
+        if(count==0){
+            Log.i("Module Adapter ", "using incomplete icon");
+            holder.completeIcon.setImageResource(R.drawable.ic_check_circle_white_36dp);
+        }else {
+            Log.i("Module Adapter ", "using complete icon");
+            holder.completeIcon.setImageResource(R.mipmap.icon_complete);
+        }
     }
 
     @Override
@@ -85,6 +102,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
                 itemClickCallback.OnItemClick(getAdapterPosition());
             }else if(v.getId()== R.id.item_icon_complete){
                 itemClickCallback.OnModuleCompleteClick(getAdapterPosition());
+                notifyDataSetChanged();
             }
         }
     }

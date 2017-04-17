@@ -28,6 +28,10 @@ public interface ModuleService {
     Call<List<UserDetails>> getStudents(@Path("userId") int id , @Path("subjectId") int subId ,
                                         @Path("moduleId") int moduleId);
 
+    @POST("{userId}/subject/{subjectId}/module")
+    Call<Void> completedModule(@Path("userId") int userId, @Path("subjectId") int subId, @Body Module module);
+
+
     class Factory {
 
         public static ModuleService service;

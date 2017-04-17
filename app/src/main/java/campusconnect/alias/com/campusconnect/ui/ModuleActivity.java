@@ -34,7 +34,7 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
     private static int uid;
     private static int subjectId;
     private HashSet<Module> moduleList;
-    private ArrayList<Module> mod;
+    private static ArrayList<Module> mod;
     private ModuleAdapter moduleAdapter;
     private LinearLayoutManager linearLayoutManager;
     @BindView(R.id.list_module) RecyclerView recyclerView;
@@ -85,7 +85,7 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
     }
 
     private void updateAdapter(ArrayList<Module> modules) {
-        moduleAdapter = new ModuleAdapter(this, modules);
+        moduleAdapter = new ModuleAdapter(this, modules,uid);
         recyclerView.setAdapter(moduleAdapter);
         moduleAdapter.setItemClickCallback(this);
     }
@@ -119,12 +119,34 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
 
     @Override
     public void OnModuleCompleteClick(int p) {
-        Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
+//        Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
+        Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
+        onModuleCompletion(p);
+        UserDetails userTemp = new UserDetails();
+        userTemp.setUserId(uid);
+        mod.get(p).getUser().add(userTemp);
+        moduleAdapter.notifyDataSetChanged();
+    }
+
+    private void onModuleCompletion(int p) {
+        final Module module = mod.get(p);
+        ModuleService.Factory.getInstance().completedModule(uid,subjectId,module).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i(TAG, "Module completed = " + module.getModuleName());
+                Toast.makeText(getBaseContext(),"Module completed = " + module.getModuleName(),Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Couldn't complete module");
+                Log.i(TAG, t.getMessage());
+            }
+        });
     }
 
 
     public void onSuccess(int uid , List<UserDetails> studentList) {
-        finish();
         Intent intent = new Intent(getBaseContext(), StudentActivity.class);
         intent.putExtra("studentList", Parcels.wrap(studentList));
         intent.putExtra("uid", uid);

@@ -22,6 +22,7 @@ public class UserDetails {
 
     public UserDetails(){}
 
+
     public UserDetails(int id, String name , String email, String password){
         this.userId = id;
         this.userName = name;
