@@ -24,7 +24,7 @@
         <activity android:name=".ui.RecievedRequest" />
         <activity android:name=".ui.SentRequest" />
         <activity android:name=".ui.ModuleActivity" />
-        <activity android:name=".ui.StudentListActivity" />
+        <activity android:name=".ui.StudentActivity" />
         <activity android:name=".ui.ChatRoomActivity"></activity>
     </application>
 

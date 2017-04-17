@@ -28,6 +28,8 @@ public interface SubjectService {
 //    @POST("{userId}/subject")
 //    Call<Void> addSubject (@PathParam("userId") int id, Subject subject);
 
+
+//    Delete does not accept body.
 //    @DELETE("{userId}/subject")
 //    Call<Void> deleteSubject (@Path("userId") int id, @Body Subject subject);
 

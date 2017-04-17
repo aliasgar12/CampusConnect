@@ -24,6 +24,9 @@ public interface ModuleService {
     @GET("{userId}/subject/{subjectId}")
     Call<HashSet<Module>> getModules(@Path("userId") int id, @Path("subjectId") int subId );
 
+    @GET("{userId}/subject/{subjectId}/module/{moduleId}")
+    Call<List<UserDetails>> getStudents(@Path("userId") int id , @Path("subjectId") int subId ,
+                                        @Path("moduleId") int moduleId);
 
     class Factory {
 

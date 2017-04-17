@@ -9,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +21,7 @@ import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.ModuleAdapter;
 import campusconnect.alias.com.campusconnect.model.Module;
+import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.web.services.ModuleService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,8 +60,6 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
-
-
     }
 
     private void loadModules(int uid, final int subjectId) {
@@ -90,13 +91,44 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
         moduleAdapter.setItemClickCallback(this);
     }
 
+
+
+
+
     @Override
     public void OnItemClick(int p) {
-        Toast.makeText(getBaseContext(),mod.get(p).getModuleName(),Toast.LENGTH_LONG).show();
+        final Module moduleClicked = mod.get(p);
+        int moduleId = moduleClicked.getModuleId();
+        ModuleService.Factory.getInstance().getStudents(uid,subjectId, moduleId ).enqueue(new Callback<List<UserDetails>>() {
+            @Override
+            public void onResponse(Call<List<UserDetails>> call, Response<List<UserDetails>> response) {
+                Log.i(TAG, "Getting Student list for the module " + moduleClicked.getModuleName());
+                Log.i(TAG,response.message());
+                List<UserDetails> studentList = response.body();
+                onSuccess(uid, studentList);
+
+            }
+
+            @Override
+            public void onFailure(Call<List<UserDetails>> call, Throwable t) {
+                Log.i(TAG, "Failed to retrieve user list for the module list" + moduleClicked.getModuleName());
+                Log.i(TAG, t.getMessage());
+                Log.i(TAG, t.toString());
+            }
+        });
     }
 
     @Override
     public void OnModuleCompleteClick(int p) {
         Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
+    }
+
+
+    public void onSuccess(int uid , List<UserDetails> studentList) {
+        finish();
+        Intent intent = new Intent(getBaseContext(), StudentActivity.class);
+        intent.putExtra("studentList", Parcels.wrap(studentList));
+        intent.putExtra("uid", uid);
+        startActivity(intent);
     }
 }
