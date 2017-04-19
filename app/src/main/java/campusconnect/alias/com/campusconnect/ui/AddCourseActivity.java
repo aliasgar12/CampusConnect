@@ -7,6 +7,8 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -37,7 +39,9 @@ public class AddCourseActivity extends AppCompatActivity {
     private static final int STEP_THREE_COMPLETE = 2;
     @BindView(R.id.spinner_college) Spinner spinnerCollege;
     @BindView(R.id.spinner_dept) Spinner spinnerDept;
-    @BindView(R.id.btn_search) Button search;
+    @BindView(R.id.btn_search) Button btn_search;
+    private static int collegeId;
+    private static int deptId;
 
 
     @Override
@@ -56,35 +60,110 @@ public class AddCourseActivity extends AppCompatActivity {
         if(!check) {
 
             Log.i(TAG, "Database doesn't exist");
+            loadFromServer();
 
-            //Fetch college list from the REST API
-            Log.i(TAG, "Fetching College list from REST");
-            loadCollegeList();
-
-                handler = new Handler() {
-                    @Override
-                    public void handleMessage(Message msg) {
-                        switch (msg.what) {
-                            case STEP_ONE_COMPLETE:
-                                //Fetch dept list from the REST API
-                                Log.i(TAG, "Fetching Department list from REST");
-                                loadDeptList();
-                                break;
-                            case STEP_TWO_COMPLETE:
-                                //save to local db
-                                saveToLocalDB();
-                                break;
-                            case STEP_THREE_COMPLETE:
-                                Log.i(TAG, "Creating db and loading college spinner");
-                                loadSpinnerCollege();
-                        }}
-                };
         }else {
-
-            //loading college spinner
+            //loading college spinner and dept spinner from localdb
             Log.i(TAG, "Loading college spinner without creating db");
             loadSpinnerCollege();
         }
+
+        //College Spinner
+        spinnerCollege.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String collegeName = (String) parent.getItemAtPosition(position);
+                loadSpinnerDept(collegeName);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                collegeId = -1;
+            }
+        });
+
+
+        //College Spinner
+        spinnerDept.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String deptName = (String) parent.getItemAtPosition(position);
+
+                //get dept id for the selected dept from localdb
+                Log.i(TAG, "Getting dept id for clicked dept");
+                db.open();
+                deptId = db.getDeptId(deptName);
+                db.close();
+                Log.i(TAG, "Department id clicked = " + deptId);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                deptId = -1;
+            }
+        });
+
+
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+
+    }
+
+
+
+
+    private void loadSpinnerDept(String collegeName){
+        //get collegeId for clicked college
+        Log.i(TAG, "Getting Id for clicked college");
+        db.open();
+        collegeId = db.getCollegeId(collegeName);
+        Log.i(TAG, "college clicked with id = " + collegeId);
+
+        //get dept list and load dept spinner
+        List<String> departments = db.getDeptListByCollegeId(collegeId);
+        db.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, departments);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spinnerDept.setAdapter(dataAdapter);
+        db.close();
+    }
+
+
+
+
+    private void loadFromServer() {
+        //Fetch college list from the REST API
+        Log.i(TAG, "Fetching College list from REST");
+        loadCollegeList();
+
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case STEP_ONE_COMPLETE:
+                        //Fetch dept list from the REST API
+                        Log.i(TAG, "Fetching Department list from REST");
+                        loadDeptList();
+                        break;
+                    case STEP_TWO_COMPLETE:
+                        //save to local db
+                        saveToLocalDB();
+                        break;
+                    case STEP_THREE_COMPLETE:
+                        Log.i(TAG, "Creating db and loading college spinner");
+                        loadSpinnerCollege();
+                }}
+        };
     }
 
     private void loadSpinnerCollege() {

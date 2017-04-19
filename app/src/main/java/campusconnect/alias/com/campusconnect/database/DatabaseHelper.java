@@ -131,7 +131,7 @@ import campusconnect.alias.com.campusconnect.model.Department;
         Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             do {
                 collegeList.add(cursor.getString(1));
             } while (cursor.moveToNext());
@@ -149,11 +149,11 @@ import campusconnect.alias.com.campusconnect.model.Department;
 
         int collegeId = -1;
         String selectQuery = "SELECT " + KEY_COLLEGE_ID + " FROM " + TABLE_COLLEGE +
-                " WHERE " + KEY_COLLEGE_NAME + "LIKE '"+ name + "'";
+                " WHERE " + KEY_COLLEGE_NAME + " LIKE '"+ name + "'";
         Cursor cursor = sqLiteDatabase.rawQuery(selectQuery,null);
-        // looping through all rows and adding to list
+        // getting collegeId for the selected row
         if (cursor != null && cursor.moveToFirst()) {
-             collegeId = cursor.getInt(1);
+             collegeId = cursor.getInt(0);
         }
         // closing connection
         cursor.close();
@@ -161,6 +161,52 @@ import campusconnect.alias.com.campusconnect.model.Department;
         return collegeId;
 
     }
+
+
+    //returns deptId when dept name is clicked on the spinner
+    public int getDeptId(String name){
+
+        int deptId = -1;
+        String selectQuery = "SELECT " + KEY_DEPT_ID + " FROM " + TABLE_DEPT +
+                " WHERE " + KEY_DEPT_NAME + " LIKE '"+ name + "'";
+        Cursor cursor = sqLiteDatabase.rawQuery(selectQuery,null);
+        // getting dept id for the selected row
+        if (cursor != null && cursor.moveToFirst()) {
+            deptId = cursor.getInt(0);
+        }
+        // closing connection
+        cursor.close();
+        // returning college list
+        return deptId;
+
+    }
+
+    public List<String> getDeptListByCollegeId(int collegeId){
+        List<String> deptList = new ArrayList<>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_DEPT + " WHERE " +KEY_COLLEGE_ID+ " = " + collegeId;
+        Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                deptList.add(cursor.getString(1));
+            } while (cursor.moveToNext());
+        }
+
+        // closing connection
+        cursor.close();
+        // returning college list
+        return deptList;
+    }
+
+}
+
+
+
+
+
 
 //    public List<College> getCollegeList(){
 //        List<College> collegeList = new ArrayList<College>();
@@ -184,7 +230,3 @@ import campusconnect.alias.com.campusconnect.model.Department;
 //        return collegeList;
 //    }
 
-
-
-
-}

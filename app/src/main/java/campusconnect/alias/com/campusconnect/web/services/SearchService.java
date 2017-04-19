@@ -3,22 +3,19 @@ package campusconnect.alias.com.campusconnect.web.services;
 import java.util.List;
 
 import campusconnect.alias.com.campusconnect.model.Subject;
-import campusconnect.alias.com.campusconnect.model.UserDetails;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
-import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
- * Created by alias on 4/13/2017.
+ * Created by alias on 4/19/2017.
  */
 
-public interface SubjectService {
+public interface SearchService {
 
     String BASE_URL = "http://10.0.2.2:8080/StudyConnect/webapi/user/";
 
@@ -54,12 +51,4 @@ public interface SubjectService {
             return service;
         }
     }
-
-
-
 }
-
-//    Issues
-//    Delete does not accept body.
-//    @DELETE("{userId}/subject")
-//    Call<Void> deleteSubject (@Path("userId") int id, @Body Subject subject);
