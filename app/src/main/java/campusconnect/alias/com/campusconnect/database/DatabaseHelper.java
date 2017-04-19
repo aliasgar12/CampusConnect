@@ -126,6 +126,8 @@ import campusconnect.alias.com.campusconnect.model.Department;
     public List<String> getCollegeList(){
         List<String> collegeList = new ArrayList<>();
 
+        collegeList.add("Select College");
+
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_COLLEGE;
         Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
@@ -183,7 +185,7 @@ import campusconnect.alias.com.campusconnect.model.Department;
 
     public List<String> getDeptListByCollegeId(int collegeId){
         List<String> deptList = new ArrayList<>();
-
+        deptList.add("Select Department");
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_DEPT + " WHERE " +KEY_COLLEGE_ID+ " = " + collegeId;
         Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);

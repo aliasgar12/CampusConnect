@@ -6,9 +6,7 @@ import campusconnect.alias.com.campusconnect.model.Subject;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.HTTP;
 import retrofit2.http.Path;
 
 /**
@@ -17,35 +15,34 @@ import retrofit2.http.Path;
 
 public interface SearchService {
 
-    String BASE_URL = "http://10.0.2.2:8080/StudyConnect/webapi/user/";
+    String BASE_URL = "http://10.0.2.2:8080/StudyConnect/webapi/user/search/";
+
+    // Get subject by Subject CRN
+    @GET("{subjectCRN}")
+    Call<Subject> getSubjectByCRN(@Path("subjectCRN") int subCRN);
+
+    // Get subject by College
+    @GET("college/{collegeId}")
+    Call<List<Subject>> getSubjectByCollege(@Path("collegeId") int collegeId);
+
+    // Get subject by College and Department
+    @GET("college/{collegeId}/dept/{deptId}")
+    Call<Subject> getSubjectByCollegeDept(@Path("collegeId") int collegeId, @Path("deptId") int deptId);
 
 
-    // Get subjects for a particular userId
-    @GET("{userId}/subject")
-    Call<List<Subject>> get(@Path("userId") int id);
 
-    // add a subject to a users profile
-//    @POST("{userId}/subject")
-//    Call<Void> addSubject (@PathParam("userId") int id, Subject subject);
-
-
-
-
-
-    @HTTP(method = "DELETE", path = "{userId}/subject", hasBody = true)
-    Call<Void> deleteSubject (@Path("userId") int id, @Body Subject subject);
 
     class Factory {
 
-        public static SubjectService service;
+        public static SearchService service;
 
-        public static SubjectService getInstance() {
+        public static SearchService getInstance() {
             if (service == null) {
                 Retrofit retrofit = new Retrofit.Builder()
                         .addConverterFactory(GsonConverterFactory.create())
                         .baseUrl(BASE_URL)
                         .build();
-                service = retrofit.create(SubjectService.class);
+                service = retrofit.create(SearchService.class);
                 return service;
             }
             return service;
