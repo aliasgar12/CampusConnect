@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.io.File;
@@ -22,7 +23,9 @@ import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.database.DatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.College;
 import campusconnect.alias.com.campusconnect.model.Department;
+import campusconnect.alias.com.campusconnect.model.Subject;
 import campusconnect.alias.com.campusconnect.web.services.AddCourseService;
+import campusconnect.alias.com.campusconnect.web.services.SearchService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,6 +43,7 @@ public class AddCourseActivity extends AppCompatActivity {
     @BindView(R.id.spinner_college) Spinner spinnerCollege;
     @BindView(R.id.spinner_dept) Spinner spinnerDept;
     @BindView(R.id.btn_search) Button btn_search;
+    @BindView(R.id.input_subjectId) EditText subjectCRN;
     private static int collegeId;
     private static int deptId;
 
@@ -108,6 +112,24 @@ public class AddCourseActivity extends AppCompatActivity {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String subCRN = subjectCRN.getText().toString();
+                if(!(subCRN.isEmpty()))
+                    SearchService.Factory.getInstance().getSubjectByCRN(Integer.parseInt(subCRN.toString()))
+                            .enqueue(new Callback<Subject>() {
+                                @Override
+                                public void onResponse(Call<Subject> call, Response<Subject> response) {
+                                    Log.i(TAG, "Getting Subjects by subject CRN");
+                                    Subject subject = response.body();
+                                    Log.i(TAG, "Fetched Subject = " + subject.getSubjectName());
+                                }
+
+                                @Override
+                                public void onFailure(Call<Subject> call, Throwable t) {
+
+                                }
+                            });
+
+
 
             }
         });
