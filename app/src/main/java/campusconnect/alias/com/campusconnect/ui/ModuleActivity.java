@@ -30,7 +30,7 @@ import retrofit2.Response;
 public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.ItemClickCallback {
 
 
-    private static final String TAG = "ModuleActiviy";
+    private static final String TAG = "ModuleActivity";
     private static int uid;
     private static int subjectId;
     private HashSet<Module> moduleList;

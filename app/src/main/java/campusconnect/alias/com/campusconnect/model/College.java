@@ -26,7 +26,10 @@ public class College {
 	public void setCollegeName(String collegeName) {
 		this.collegeName = collegeName;
 	}
-	
-	
-	
+
+	public List<Subject> getSubjectList() {return subjectList;}
+	public void setSubjectList(List<Subject> subjectList) {	this.subjectList = subjectList;}
+
+	public List<Department> getDeptList() {return deptList;}
+	public void setDeptList(List<Department> deptList) {this.deptList = deptList;}
 }

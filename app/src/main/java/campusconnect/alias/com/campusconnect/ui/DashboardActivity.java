@@ -66,7 +66,8 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
         addCourse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(DashboardActivity.this, AddCourseActivity.class);
+                startActivity(intent);
             }
         });
 
