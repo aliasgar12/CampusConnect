@@ -27,7 +27,7 @@ public interface SearchService {
 
     // Get subject by College and Department
     @GET("college/{collegeId}/dept/{deptId}")
-    Call<Subject> getSubjectByCollegeDept(@Path("collegeId") int collegeId, @Path("deptId") int deptId);
+    Call<List<Subject>> getSubjectByCollegeDept(@Path("collegeId") int collegeId, @Path("deptId") int deptId);
 
 
 

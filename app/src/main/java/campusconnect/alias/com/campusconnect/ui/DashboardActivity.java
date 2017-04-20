@@ -67,6 +67,7 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DashboardActivity.this, AddCourseActivity.class);
+                intent.putExtra("uid", uid);
                 startActivity(intent);
             }
         });

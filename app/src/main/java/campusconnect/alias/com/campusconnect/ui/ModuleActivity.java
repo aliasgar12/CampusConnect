@@ -71,7 +71,7 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
                 Set<Module> moduleList = new HashSet<Module>(response.body());
                 for(Module module: moduleList)
                     Log.i(TAG, module.getModuleName());
-                mod = new ArrayList<Module>(moduleList);
+                mod = new ArrayList<>(moduleList);
                 updateAdapter(mod);
             }
 

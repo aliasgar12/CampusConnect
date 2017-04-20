@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:id="@+id/cont_root"
+    android:id="@+id/cont_root_add_subject"
     android:maxWidth="50dp"
     android:clickable="true">
 
@@ -13,27 +13,27 @@
         android:paddingStart="16dp"
         android:paddingTop="16dp"
         android:layout_marginRight="60dp"
-        android:id="@+id/item_subject_name"
+        android:id="@+id/item_add_subject_name"
         android:maxLines="1"
         android:textSize="30dp"/>
     <TextView
-        android:layout_below="@+id/item_subject_name"
+        android:layout_below="@+id/item_add_subject_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="CRN ="
         android:paddingStart="16dp"
         android:paddingTop="16dp"
         android:layout_marginRight="60dp"
-        android:id="@+id/item_subject_crn"
+        android:id="@+id/item_add_subject_crn"
         android:maxLines="1"
         android:textSize="18dp"/>
 
     <ImageView
         android:layout_width="60dp"
         android:layout_height="match_parent"
-        android:id="@+id/item_icon_delete"
+        android:id="@+id/item_icon_add"
         android:layout_alignParentRight="true"
-        android:src="@mipmap/icon_delete"
+        android:src="@drawable/ic_add_circle_white_36dp"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>

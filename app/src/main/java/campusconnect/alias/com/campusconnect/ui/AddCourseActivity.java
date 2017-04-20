@@ -1,11 +1,12 @@
 package campusconnect.alias.com.campusconnect.ui;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
@@ -20,23 +22,26 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.adapter.AddSubjectAdapter;
 import campusconnect.alias.com.campusconnect.database.DatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.College;
 import campusconnect.alias.com.campusconnect.model.Department;
 import campusconnect.alias.com.campusconnect.model.Subject;
+import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.web.services.AddCourseService;
 import campusconnect.alias.com.campusconnect.web.services.SearchService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddCourseActivity extends AppCompatActivity {
+public class AddCourseActivity extends AppCompatActivity implements AddSubjectAdapter.ItemClickCallback {
 
     private static final String TAG ="AddCourseActivity";
     private List<Department> deptList;
     private List<College> collegeList;
     private DatabaseHelper db;
     private Handler handler;
+    private Handler recyclerViewHandler;
     private static final int STEP_ONE_COMPLETE = 0;
     private static final int STEP_TWO_COMPLETE = 1;
     private static final int STEP_THREE_COMPLETE = 2;
@@ -44,8 +49,13 @@ public class AddCourseActivity extends AppCompatActivity {
     @BindView(R.id.spinner_dept) Spinner spinnerDept;
     @BindView(R.id.btn_search) Button btn_search;
     @BindView(R.id.input_subjectId) EditText subjectCRN;
+    @BindView(R.id.list_add_subject) RecyclerView recyclerView;
     private static int collegeId;
     private static int deptId;
+    private List<Subject> subjectList;
+    private LinearLayoutManager linearLayoutManager;
+    private AddSubjectAdapter addSubjectAdapter;
+    private static int uid;
 
 
     @Override
@@ -53,6 +63,8 @@ public class AddCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
         ButterKnife.bind(this);
+
+        uid = getIntent().getIntExtra("uid",0);
 
 
         this.deleteDatabase("myDetails.db");
@@ -113,32 +125,102 @@ public class AddCourseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String subCRN = subjectCRN.getText().toString();
-                if(!(subCRN.isEmpty()))
+                if(!(subCRN.isEmpty())) {
                     SearchService.Factory.getInstance().getSubjectByCRN(Integer.parseInt(subCRN.toString()))
                             .enqueue(new Callback<Subject>() {
-                                @Override
-                                public void onResponse(Call<Subject> call, Response<Subject> response) {
-                                    Log.i(TAG, "Getting Subjects by subject CRN");
-                                    Subject subject = response.body();
-                                    Log.i(TAG, "Fetched Subject = " + subject.getSubjectName());
-                                }
+                        @Override
+                        public void onResponse(Call<Subject> call, Response<Subject> response) {
+                            Log.i(TAG, "Getting Subjects by subject CRN");
+                            Subject subject = response.body();
+                            if(subject != null) {
+                                Log.i(TAG, "Fetched Subject = " + subject.getSubjectName());
+                                subjectList.add(subject);
+                            }else
+                                Toast.makeText(getBaseContext(), "Subject not found. Please check the CRN and try again.",
+                                        Toast.LENGTH_LONG).show();
 
-                                @Override
-                                public void onFailure(Call<Subject> call, Throwable t) {
+                            // finished loading and informing recyclerViewHandler
+                            Message msg = Message.obtain();
+                            msg.what = STEP_ONE_COMPLETE;
+                            recyclerViewHandler.sendMessage(msg);
+                        }
 
-                                }
-                            });
+                        @Override
+                        public void onFailure(Call<Subject> call, Throwable t) {
 
+                        }
+                    });
 
+                }else if(collegeId == -1){
+                    Toast.makeText(getBaseContext(), "Please Enter College details", Toast.LENGTH_LONG).show();
+                }else if(deptId == -1){
+                    SearchService.Factory.getInstance().getSubjectByCollege(collegeId)
+                            .enqueue(new Callback<List<Subject>>() {
+                        @Override
+                        public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
+                            Log.i(TAG,"Getting subjects for college id = " + collegeId);
+                            subjectList = response.body();
+                            for(Subject sub : subjectList)
+                                Log.i(TAG, sub.getSubjectName());
+                            // finished loading and informing recyclerViewHandler
+                            Message msg = Message.obtain();
+                            msg.what = STEP_ONE_COMPLETE;
+                            recyclerViewHandler.sendMessage(msg);
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Subject>> call, Throwable t) {
+
+                        }
+                    });
+                }else{
+                    SearchService.Factory.getInstance().getSubjectByCollegeDept(collegeId,deptId)
+                            .enqueue(new Callback<List<Subject>>() {
+                        @Override
+                        public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
+                            Log.i(TAG,"Getting subjects for college and dept");
+                            subjectList = response.body();
+                            for(Subject sub : subjectList)
+                                Log.i(TAG, sub.getSubjectName());
+                            // finished loading and informing recyclerViewHandler
+                            Message msg = Message.obtain();
+                            msg.what = STEP_ONE_COMPLETE;
+                            recyclerViewHandler.sendMessage(msg);
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Subject>> call, Throwable t) {
+
+                        }
+                    });
+                }
 
             }
+
+
         });
 
+        recyclerViewHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case STEP_ONE_COMPLETE:
+                        updateAdapter();
+                }}
+        };
 
 
     }
 
-
+    private void updateAdapter() {
+        if(subjectList != null) {
+            linearLayoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            addSubjectAdapter = new AddSubjectAdapter(this, subjectList, uid);
+            recyclerView.setAdapter(addSubjectAdapter);
+            addSubjectAdapter.setItemClickCallback(this);
+        }
+    }
 
 
     private void loadSpinnerDept(String collegeName){
@@ -272,6 +354,17 @@ public class AddCourseActivity extends AppCompatActivity {
                 Log.i(TAG, "Failed establishing connection with dept resource");
             }
         });
+    }
+
+    @Override
+    public void OnSubjectAddIconClick(int p) {
+        Toast.makeText(getBaseContext(),subjectList.get(p).getSubjectName() + "completed", Toast.LENGTH_LONG).show();
+//        Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
+//        onModuleCompletion(p);
+//        UserDetails userTemp = new UserDetails();
+//        userTemp.setUserId(uid);
+//        mod.get(p).getUser().add(userTemp);
+//        moduleAdapter.notifyDataSetChanged();
     }
 }
 

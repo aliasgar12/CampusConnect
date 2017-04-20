@@ -12,7 +12,7 @@ public class Subject{
 	int subjectCRN;
 	String subjectName;
 //	private Set<Module> modules = new HashSet<>();
-//	private Set<UserDetails> studentList = new HashSet<>();
+	private Set<UserDetails> studentList = new HashSet<>();
 //	private Set<Request> requestList = new HashSet<>();
 //	private Department dept;
 //	private College college;
@@ -50,13 +50,13 @@ public class Subject{
 //		this.modules = modules;
 //	}
 //
-//	//UserList
-//	public Set<UserDetails> getStudentList() {
-//		return studentList;
-//	}
-//	public void setStudentList(Set<UserDetails> studentList) {
-//		this.studentList = studentList;
-//	}
+	//UserList
+	public Set<UserDetails> getStudentList() {
+		return studentList;
+	}
+	public void setStudentList(Set<UserDetails> studentList) {
+		this.studentList = studentList;
+	}
 //
 //	//RequestList
 //	public Set<Request> getRequestList() {
