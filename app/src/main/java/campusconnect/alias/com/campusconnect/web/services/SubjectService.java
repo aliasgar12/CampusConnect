@@ -25,11 +25,11 @@ public interface SubjectService {
 
     // Get subjects for a particular userId
     @GET("{userId}/subject")
-    Call<List<Subject>> get(@Path("userId") int id);
+    Call<List<Subject>> getMySubjects(@Path("userId") int id);
 
     // add a subject to a users profile
-//    @POST("{userId}/subject")
-//    Call<Void> addSubject (@PathParam("userId") int id, Subject subject);
+    @POST("{userId}/subject")
+    Call<Void>  addSubject (@Path("userId") int id, @Body Subject subject);
 
 
 

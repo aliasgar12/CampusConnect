@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import org.parceler.Parcels;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +45,8 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        subList = new ArrayList<Subject>();
+        subList = new ArrayList<>();
+
 
         // get intent values from previous activity
         Intent intent = getIntent();
@@ -68,16 +70,46 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
             public void onClick(View v) {
                 Intent intent = new Intent(DashboardActivity.this, AddCourseActivity.class);
                 intent.putExtra("uid", uid);
-                startActivity(intent);
+                startActivityForResult(intent,101);
             }
         });
 
+        Log.i(TAG, "setting the adapter");
         subjectAdapter = new SubjectAdapter(this,subList);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(subjectAdapter);
         subjectAdapter.setItemClickCallback(this);
 
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "This is onResume");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "This is onActivityResult");
+//        Log.i(TAG, "adding subjects");
+//        Log.i(TAG,String.valueOf(requestCode));
+//        Log.i(TAG, String.valueOf(resultCode));
+//        for(Subject sub: subjectAdded)
+//            Log.i(TAG, sub.getSubjectName());
+        if(requestCode == 101){
+            if (resultCode == RESULT_OK){
+                Log.i(TAG, "Inside the result code section");
+                List<Subject> subjectAdded = Parcels.unwrap(data.getParcelableExtra("subjectAdded"));
+                for(Subject sub: subjectAdded)
+                    Log.i(TAG, sub.getSubjectName());
+                subList.addAll(subjectAdded);
+                subjectAdapter.notifyDataSetChanged();
+            }
+        }
 
     }
 

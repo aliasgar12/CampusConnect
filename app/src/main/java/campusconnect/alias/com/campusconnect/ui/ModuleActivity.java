@@ -119,13 +119,13 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
 
     @Override
     public void OnModuleCompleteClick(int p) {
-//        Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
-        Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
-        onModuleCompletion(p);
-        UserDetails userTemp = new UserDetails();
-        userTemp.setUserId(uid);
-        mod.get(p).getUser().add(userTemp);
-        moduleAdapter.notifyDataSetChanged();
+    //        Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
+            Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
+            onModuleCompletion(p);
+            UserDetails userTemp = new UserDetails();
+            userTemp.setUserId(uid);
+            mod.get(p).getUser().add(userTemp);
+            moduleAdapter.notifyDataSetChanged();
     }
 
     private void onModuleCompletion(int p) {
@@ -139,7 +139,7 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.i(TAG, "Couldn't complete module");
+                Log.i(TAG, "Couldn't complete module. Please try again.");
                 Log.i(TAG, t.getMessage());
             }
         });

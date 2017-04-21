@@ -1,8 +1,10 @@
 package campusconnect.alias.com.campusconnect.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +18,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.parceler.Parcels;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,6 +35,7 @@ import campusconnect.alias.com.campusconnect.model.Subject;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.web.services.AddCourseService;
 import campusconnect.alias.com.campusconnect.web.services.SearchService;
+import campusconnect.alias.com.campusconnect.web.services.SubjectService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,20 +48,21 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     private DatabaseHelper db;
     private Handler handler;
     private Handler recyclerViewHandler;
-    private static final int STEP_ONE_COMPLETE = 0;
-    private static final int STEP_TWO_COMPLETE = 1;
-    private static final int STEP_THREE_COMPLETE = 2;
     @BindView(R.id.spinner_college) Spinner spinnerCollege;
     @BindView(R.id.spinner_dept) Spinner spinnerDept;
     @BindView(R.id.btn_search) Button btn_search;
     @BindView(R.id.input_subjectId) EditText subjectCRN;
     @BindView(R.id.list_add_subject) RecyclerView recyclerView;
-    private static int collegeId;
-    private static int deptId;
-    private List<Subject> subjectList;
+    private List<Subject> subjectList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private AddSubjectAdapter addSubjectAdapter;
+    private static int collegeId;
+    private static int deptId;
     private static int uid;
+    private static final int STEP_ONE_COMPLETE = 0;
+    private static final int STEP_TWO_COMPLETE = 1;
+    private static final int STEP_THREE_COMPLETE = 2;
+    private static List<Subject> subjectAdded = new ArrayList<>();
 
 
     @Override
@@ -65,7 +72,6 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         ButterKnife.bind(this);
 
         uid = getIntent().getIntExtra("uid",0);
-
 
         this.deleteDatabase("myDetails.db");
 
@@ -133,6 +139,7 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
                             Log.i(TAG, "Getting Subjects by subject CRN");
                             Subject subject = response.body();
                             if(subject != null) {
+                                subjectList.clear();
                                 Log.i(TAG, "Fetched Subject = " + subject.getSubjectName());
                                 subjectList.add(subject);
                             }else
@@ -212,6 +219,35 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("subjectAdded", Parcels.wrap(subjectAdded));
+//        if (getParent() == null) {
+//            setResult(DashboardActivity.RESULT_OK, intent);
+//        }
+//        else {
+//            getParent().setResult(DashboardActivity.RESULT_OK, intent);
+//        }
+        setResult(RESULT_OK, intent);
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        subjectAdded.clear();
+    }
+
+    //    @Override
+//    public void finish() {
+//        Intent intent = new Intent();
+//        intent.putExtra("subjectAdded", Parcels.wrap(subjectAdded));
+//        setResult(RESULT_OK, intent);
+//        System.exit(0);
+//        super.finish();
+//    }
+
     private void updateAdapter() {
         if(subjectList != null) {
             linearLayoutManager = new LinearLayoutManager(this);
@@ -243,7 +279,19 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     }
 
 
+    private void loadSpinnerCollege() {
 
+        db = new DatabaseHelper(this);
+        db.open();
+        List<String> colleges = db.getCollegeList();
+        db.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colleges);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spinnerCollege.setAdapter(dataAdapter);
+    }
 
     private void loadFromServer() {
         //Fetch college list from the REST API
@@ -268,20 +316,6 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
                         loadSpinnerCollege();
                 }}
         };
-    }
-
-    private void loadSpinnerCollege() {
-
-        db = new DatabaseHelper(this);
-        db.open();
-        List<String> colleges = db.getCollegeList();
-        db.close();
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colleges);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // attaching data adapter to spinner
-        spinnerCollege.setAdapter(dataAdapter);
     }
 
     //check if the database exist in the localdb
@@ -358,13 +392,31 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 
     @Override
     public void OnSubjectAddIconClick(int p) {
-        Toast.makeText(getBaseContext(),subjectList.get(p).getSubjectName() + "completed", Toast.LENGTH_LONG).show();
-//        Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
-//        onModuleCompletion(p);
-//        UserDetails userTemp = new UserDetails();
-//        userTemp.setUserId(uid);
-//        mod.get(p).getUser().add(userTemp);
-//        moduleAdapter.notifyDataSetChanged();
+        Toast.makeText(getBaseContext(),subjectList.get(p).getSubjectName() + " added. ", Toast.LENGTH_LONG).show();
+        Log.i(TAG, "Subject Added = " + subjectList.get(p).getSubjectName());
+        addSubject(p);
+        UserDetails userTemp = new UserDetails();
+        userTemp.setUserId(uid);
+        subjectList.get(p).getStudentList().add(userTemp);
+        addSubjectAdapter.notifyDataSetChanged();
+    }
+
+    private void addSubject(int p) {
+        final Subject subject = subjectList.get(p);
+        subjectAdded.add(subject);
+        SubjectService.Factory.getInstance().addSubject(uid,subject).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i(TAG, "Subject added : " + subject.getSubjectName());
+                Toast.makeText(getBaseContext(),"Subject added : " + subject.getSubjectName(),Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Couldn't add subject. Please try again.");
+                Log.i(TAG, t.getMessage());
+            }
+        });
     }
 }
 

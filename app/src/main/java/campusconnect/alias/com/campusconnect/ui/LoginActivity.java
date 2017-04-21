@@ -148,6 +148,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(getBaseContext(),DashboardActivity.class);
         intent.putExtra("subjectList", Parcels.wrap(subjectList));
         intent.putExtra("uid", uid);
+        intent.putExtra("activity", TAG);
         startActivity(intent);
     }
 

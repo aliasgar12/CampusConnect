@@ -19,6 +19,7 @@ import campusconnect.alias.com.campusconnect.ui.AddCourseActivity;
  */
 
 public class AddSubjectAdapter extends RecyclerView.Adapter<AddSubjectAdapter.ViewHolder>{
+    private final String TAG = "AddSubjectAdapter";
     private AddCourseActivity addCourseActivity;
     private List<Subject> subjectList;
     private AddSubjectAdapter.ItemClickCallback itemClickCallback;
@@ -52,6 +53,7 @@ public class AddSubjectAdapter extends RecyclerView.Adapter<AddSubjectAdapter.Vi
         holder.subjectCRN.setText(String.valueOf(subject.getSubjectCRN()));
         int count = 0;
         for(UserDetails user: userDetailsSet) {
+            Log.i(TAG, String.valueOf(user.getUserId()));
             if (user.getUserId() == userId)
                 count++;
         }
