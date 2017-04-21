@@ -1,8 +1,12 @@
 package campusconnect.alias.com.campusconnect.model;
 
+import android.util.Log;
+
 import org.parceler.Parcel;
 
+import java.awt.font.TextAttribute;
 import java.io.Serializable;
+import java.lang.annotation.Target;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,4 +89,12 @@ public class Subject{
 //	public String toString(){
 //		return (this.subjectCRN + " " + this.subjectName + " " + this.dept + " " + this.college);
 //	}
+
+	@Override
+	public boolean equals(Object other){
+		if (!(other instanceof Subject))
+			return false;
+		Subject otherSubject = (Subject) other;
+		return this.getSubjectName().trim().equals(otherSubject.getSubjectName().trim());
+	}
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -132,79 +131,16 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             public void onClick(View v) {
                 String subCRN = subjectCRN.getText().toString();
                 if(!(subCRN.isEmpty())) {
-                    SearchService.Factory.getInstance().getSubjectByCRN(Integer.parseInt(subCRN.toString()))
-                            .enqueue(new Callback<Subject>() {
-                        @Override
-                        public void onResponse(Call<Subject> call, Response<Subject> response) {
-                            Log.i(TAG, "Getting Subjects by subject CRN");
-                            Subject subject = response.body();
-                            if(subject != null) {
-                                subjectList.clear();
-                                Log.i(TAG, "Fetched Subject = " + subject.getSubjectName());
-                                subjectList.add(subject);
-                            }else
-                                Toast.makeText(getBaseContext(), "Subject not found. Please check the CRN and try again.",
-                                        Toast.LENGTH_LONG).show();
-
-                            // finished loading and informing recyclerViewHandler
-                            Message msg = Message.obtain();
-                            msg.what = STEP_ONE_COMPLETE;
-                            recyclerViewHandler.sendMessage(msg);
-                        }
-
-                        @Override
-                        public void onFailure(Call<Subject> call, Throwable t) {
-
-                        }
-                    });
-
+                    getSubjectByCrn(subCRN);
                 }else if(collegeId == -1){
                     Toast.makeText(getBaseContext(), "Please Enter College details", Toast.LENGTH_LONG).show();
                 }else if(deptId == -1){
-                    SearchService.Factory.getInstance().getSubjectByCollege(collegeId)
-                            .enqueue(new Callback<List<Subject>>() {
-                        @Override
-                        public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                            Log.i(TAG,"Getting subjects for college id = " + collegeId);
-                            subjectList = response.body();
-                            for(Subject sub : subjectList)
-                                Log.i(TAG, sub.getSubjectName());
-                            // finished loading and informing recyclerViewHandler
-                            Message msg = Message.obtain();
-                            msg.what = STEP_ONE_COMPLETE;
-                            recyclerViewHandler.sendMessage(msg);
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Subject>> call, Throwable t) {
-
-                        }
-                    });
+                    getSubjectsByCollege();
                 }else{
-                    SearchService.Factory.getInstance().getSubjectByCollegeDept(collegeId,deptId)
-                            .enqueue(new Callback<List<Subject>>() {
-                        @Override
-                        public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                            Log.i(TAG,"Getting subjects for college and dept");
-                            subjectList = response.body();
-                            for(Subject sub : subjectList)
-                                Log.i(TAG, sub.getSubjectName());
-                            // finished loading and informing recyclerViewHandler
-                            Message msg = Message.obtain();
-                            msg.what = STEP_ONE_COMPLETE;
-                            recyclerViewHandler.sendMessage(msg);
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Subject>> call, Throwable t) {
-
-                        }
-                    });
+                    getSubjectsByCollegeDept();
                 }
 
             }
-
-
         });
 
         recyclerViewHandler = new Handler() {
@@ -219,16 +155,11 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 
     }
 
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
         intent.putExtra("subjectAdded", Parcels.wrap(subjectAdded));
-//        if (getParent() == null) {
-//            setResult(DashboardActivity.RESULT_OK, intent);
-//        }
-//        else {
-//            getParent().setResult(DashboardActivity.RESULT_OK, intent);
-//        }
         setResult(RESULT_OK, intent);
         super.onBackPressed();
     }
@@ -239,14 +170,8 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         subjectAdded.clear();
     }
 
-    //    @Override
-//    public void finish() {
-//        Intent intent = new Intent();
-//        intent.putExtra("subjectAdded", Parcels.wrap(subjectAdded));
-//        setResult(RESULT_OK, intent);
-//        System.exit(0);
-//        super.finish();
-//    }
+
+
 
     private void updateAdapter() {
         if(subjectList != null) {
@@ -257,6 +182,82 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             addSubjectAdapter.setItemClickCallback(this);
         }
     }
+
+
+    private void getSubjectByCrn(String subCRN) {
+        SearchService.Factory.getInstance().getSubjectByCRN(Integer.parseInt(subCRN.toString()))
+                .enqueue(new Callback<Subject>() {
+                    @Override
+                    public void onResponse(Call<Subject> call, Response<Subject> response) {
+                        Log.i(TAG, "Getting Subjects by subject CRN");
+                        Subject subject = response.body();
+                        if(subject != null) {
+                            subjectList.clear();
+                            Log.i(TAG, "Fetched Subject = " + subject.getSubjectName());
+                            subjectList.add(subject);
+                        }else
+                            Toast.makeText(getBaseContext(), "Subject not found. Please check the CRN and try again.",
+                                    Toast.LENGTH_LONG).show();
+
+                        // finished loading and informing recyclerViewHandler
+                        Message msg = Message.obtain();
+                        msg.what = STEP_ONE_COMPLETE;
+                        recyclerViewHandler.sendMessage(msg);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Subject> call, Throwable t) {
+
+                    }
+                });
+    }
+
+
+    private void getSubjectsByCollege() {
+        SearchService.Factory.getInstance().getSubjectByCollege(collegeId)
+                .enqueue(new Callback<List<Subject>>() {
+                    @Override
+                    public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
+                        Log.i(TAG,"Getting subjects for college id = " + collegeId);
+                        subjectList = response.body();
+                        for(Subject sub : subjectList)
+                            Log.i(TAG, sub.getSubjectName());
+                        // finished loading and informing recyclerViewHandler
+                        Message msg = Message.obtain();
+                        msg.what = STEP_ONE_COMPLETE;
+                        recyclerViewHandler.sendMessage(msg);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Subject>> call, Throwable t) {
+
+                    }
+                });
+    }
+
+
+    private void getSubjectsByCollegeDept() {
+        SearchService.Factory.getInstance().getSubjectByCollegeDept(collegeId,deptId)
+                .enqueue(new Callback<List<Subject>>() {
+                    @Override
+                    public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
+                        Log.i(TAG,"Getting subjects for college and dept");
+                        subjectList = response.body();
+                        for(Subject sub : subjectList)
+                            Log.i(TAG, sub.getSubjectName());
+                        // finished loading and informing recyclerViewHandler
+                        Message msg = Message.obtain();
+                        msg.what = STEP_ONE_COMPLETE;
+                        recyclerViewHandler.sendMessage(msg);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Subject>> call, Throwable t) {
+
+                    }
+                });
+    }
+
 
 
     private void loadSpinnerDept(String collegeName){
@@ -293,6 +294,17 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         spinnerCollege.setAdapter(dataAdapter);
     }
 
+
+
+    //check if the database exist in the localdb
+    private static boolean doesDatabaseExist(Context context, String dbName) {
+        File dbFile = context.getDatabasePath(dbName);
+        Log.i(TAG,dbFile.toString());
+        return dbFile.exists();
+    }
+
+
+
     private void loadFromServer() {
         //Fetch college list from the REST API
         Log.i(TAG, "Fetching College list from REST");
@@ -318,35 +330,9 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         };
     }
 
-    //check if the database exist in the localdb
-    private static boolean doesDatabaseExist(Context context, String dbName) {
-        File dbFile = context.getDatabasePath(dbName);
-        Log.i(TAG,dbFile.toString());
-        return dbFile.exists();
-    }
-
-    //saving items (college and dept list to localdb)
-    private void saveToLocalDB() {
-        //save college and dept list to local db if it does not exist
-        Log.i(TAG, "Creating database now");
-        db = new DatabaseHelper(this);
-        db.open();
-        Log.i(TAG, "Adding College List to localdb");
-        db.addColleges(collegeList);
-        Log.i(TAG, "Adding Dept List to localdb");
-        db.addDepartments(deptList);
-        db.close();
-
-        //finish third step and informing handler
-        Message msg = Message.obtain();
-        msg.what = STEP_THREE_COMPLETE;
-        handler.sendMessage(msg);
-
-    }
 
 
     private void loadCollegeList() {
-
         AddCourseService.Factory.getInstance().getCollegeList().enqueue(new Callback<List<College>>() {
             @Override
             public void onResponse(Call<List<College>> call, Response<List<College>> response) {
@@ -367,6 +353,8 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             }
         });
     }
+
+
 
     private void loadDeptList() {
         AddCourseService.Factory.getInstance().getDeptList().enqueue(new Callback<List<Department>>() {
@@ -390,6 +378,28 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         });
     }
 
+
+
+    //saving items (college and dept list to localdb)
+    private void saveToLocalDB() {
+        //save college and dept list to local db if it does not exist
+        Log.i(TAG, "Creating database now");
+        db = new DatabaseHelper(this);
+        db.open();
+        Log.i(TAG, "Adding College List to localdb");
+        db.addColleges(collegeList);
+        Log.i(TAG, "Adding Dept List to localdb");
+        db.addDepartments(deptList);
+        db.close();
+
+        //finish third step and informing handler
+        Message msg = Message.obtain();
+        msg.what = STEP_THREE_COMPLETE;
+        handler.sendMessage(msg);
+
+    }
+
+
     @Override
     public void OnSubjectAddIconClick(int p) {
         Toast.makeText(getBaseContext(),subjectList.get(p).getSubjectName() + " added. ", Toast.LENGTH_LONG).show();
@@ -400,6 +410,8 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         subjectList.get(p).getStudentList().add(userTemp);
         addSubjectAdapter.notifyDataSetChanged();
     }
+
+
 
     private void addSubject(int p) {
         final Subject subject = subjectList.get(p);
@@ -437,4 +449,24 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 //            // database doesn't exist yet.
 //        }
 //        return checkDB != null;
+//    }
+
+
+
+//      onbackpressed()
+//        if (getParent() == null) {
+//            setResult(DashboardActivity.RESULT_OK, intent);
+//        }
+//        else {
+//            getParent().setResult(DashboardActivity.RESULT_OK, intent);
+//        }
+
+
+//    @Override
+//    public void finish() {
+//        Intent intent = new Intent();
+//        intent.putExtra("subjectAdded", Parcels.wrap(subjectAdded));
+//        setResult(RESULT_OK, intent);
+//        System.exit(0);
+//        super.finish();
 //    }

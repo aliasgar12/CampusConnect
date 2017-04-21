@@ -95,18 +95,20 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "This is onActivityResult");
-//        Log.i(TAG, "adding subjects");
 //        Log.i(TAG,String.valueOf(requestCode));
 //        Log.i(TAG, String.valueOf(resultCode));
-//        for(Subject sub: subjectAdded)
-//            Log.i(TAG, sub.getSubjectName());
+
         if(requestCode == 101){
             if (resultCode == RESULT_OK){
                 Log.i(TAG, "Inside the result code section");
                 List<Subject> subjectAdded = Parcels.unwrap(data.getParcelableExtra("subjectAdded"));
-                for(Subject sub: subjectAdded)
-                    Log.i(TAG, sub.getSubjectName());
-                subList.addAll(subjectAdded);
+                //        Log.i(TAG, "adding subjects");
+                for(Subject sub: subjectAdded){
+                    if(!subList.contains(sub)) {
+                        Log.i(TAG, sub.getSubjectName()+ " not present");
+                        subList.add(sub);
+                    }
+                }
                 subjectAdapter.notifyDataSetChanged();
             }
         }
@@ -125,10 +127,10 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
     @Override
     public void OnDeleteItemClick(int p) {
         Subject subRemoved = subList.remove(p);
-        updatedb(uid, subRemoved);
+        updateServerDb(uid, subRemoved);
     }
 
-    private void updatedb(int uid, final Subject subRemoved) {
+    private void updateServerDb(int uid, final Subject subRemoved) {
 
         SubjectService.Factory.getInstance().deleteSubject(uid, subRemoved).enqueue(new Callback<Void>() {
             @Override
