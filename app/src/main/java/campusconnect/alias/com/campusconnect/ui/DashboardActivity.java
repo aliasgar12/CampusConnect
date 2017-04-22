@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.SubjectAdapter;
+import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 import campusconnect.alias.com.campusconnect.model.Subject;
 import campusconnect.alias.com.campusconnect.web.services.SubjectService;
 import retrofit2.Call;
@@ -46,6 +47,8 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
         setSupportActionBar(toolbar);
 
         subList = new ArrayList<>();
+
+//        Log.i(TAG, SharedPrefManager.getInstance(this).getToken());
 
 
         // get intent values from previous activity

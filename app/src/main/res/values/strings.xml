@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Campus Connect</string>
+    <string name="SHARED_PREF_NAME">com.alias.campusconnect.CC_PREF</string>
+    <string name="SHARED_PREF_TOKEN">com.alias.campusconnect.CC_TOKEN</string>
 </resources>
