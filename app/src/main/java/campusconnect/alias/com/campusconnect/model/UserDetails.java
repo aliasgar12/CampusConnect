@@ -14,6 +14,7 @@ public class UserDetails {
     private String userName;
     private String email;
     private String password;
+    private String app_token;
     private Set<Subject> subjectList = new HashSet<>();
     private Set<Module> moduleCompleted = new HashSet<>();
     private Set<Request> reqSent = new HashSet<>();
@@ -63,6 +64,14 @@ public class UserDetails {
     // Module Completed
     public Set<Module> getModuleCompleted() {return moduleCompleted;}
     public void setModuleCompleted(Set<Module> moduleCompleted) {this.moduleCompleted = moduleCompleted;}
+
+    public String getApp_token() {
+        return app_token;
+    }
+
+    public void setApp_token(String app_token) {
+        this.app_token = app_token;
+    }
 
 
     //ChatDetails

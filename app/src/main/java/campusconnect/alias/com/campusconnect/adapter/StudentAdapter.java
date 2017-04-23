@@ -27,7 +27,6 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
 
     public interface ItemClickCallback{
         void OnItemClick(int p);
-        void OnRequestItemClick(int p);
     }
 
     public void setItemClickCallback(ItemClickCallback itemClickCallback){
@@ -71,18 +70,17 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             requestIcon = (ImageView) itemView.findViewById(R.id.item_icon_request);
             container = itemView.findViewById(R.id.cont_root_student);
 
-            studentName.setOnClickListener(this);
-            requestIcon.setOnClickListener(this);
+//            studentName.setOnClickListener(this);
+//            requestIcon.setOnClickListener(this);
             container.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
-            if(v.getId()== R.id.item_student_name){
+            if(v.getId()== R.id.cont_root_student){
                 itemClickCallback.OnItemClick(getAdapterPosition());
-            }else if(v.getId()== R.id.item_icon_request){
-                itemClickCallback.OnRequestItemClick(getAdapterPosition());
+                requestIcon.setVisibility(View.VISIBLE);
             }
         }
     }

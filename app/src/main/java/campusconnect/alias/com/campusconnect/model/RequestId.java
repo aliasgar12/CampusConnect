@@ -7,18 +7,15 @@ import java.io.Serializable;
 @Parcel
 public class RequestId{
 
-	private int subjectCRN;
+	private int moduleId;
 	private int fromUserId;
 	private int toUserId;
 	
 	
 	//Getter and Setters
-	public int getSubjectCRN() {
-		return subjectCRN;
-	}
-	public void setSubjectCRN(int subjectCRN) {
-		this.subjectCRN = subjectCRN;
-	}
+
+	public int getModuleId() {return moduleId;}
+	public void setModuleId(int moduleId) {this.moduleId = moduleId;}
 
 	public int getFromUserId() {
 		return fromUserId;

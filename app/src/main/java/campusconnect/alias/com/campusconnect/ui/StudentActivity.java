@@ -1,10 +1,12 @@
 package campusconnect.alias.com.campusconnect.ui;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.parceler.Parcels;
 
@@ -14,12 +16,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.StudentAdapter;
+import campusconnect.alias.com.campusconnect.model.Request;
+import campusconnect.alias.com.campusconnect.model.RequestId;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
+import campusconnect.alias.com.campusconnect.web.services.RequestService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class StudentActivity extends AppCompatActivity  implements StudentAdapter.ItemClickCallback{
 
 
     private static int fromId;
+    private static int moduleId;
     private ArrayList<UserDetails> studentList;
     @BindView(R.id.list_student) RecyclerView recyclerView;
     private StudentAdapter studentAdapter;
@@ -34,11 +43,12 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
         ButterKnife.bind(this);
 
         fromId = getIntent().getIntExtra("uid", 0);
+        moduleId = getIntent().getIntExtra("moduleId", 0);
         studentList = Parcels.unwrap(getIntent().getParcelableExtra("studentList"));
 
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        StudentAdapter studentAdapter = new StudentAdapter(this, studentList);
+        studentAdapter = new StudentAdapter(this, studentList);
         recyclerView.setAdapter(studentAdapter);
         studentAdapter.setItemClickCallback(this);
 
@@ -47,10 +57,33 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
     @Override
     public void OnItemClick(int p) {
         Log.i(TAG, "Student Name clicked");
+        UserDetails userTo = studentList.get(p);
+        Toast.makeText(this, userTo.getUserName() + " clicked",Toast.LENGTH_LONG ).show();
+        RequestId requestId = new RequestId();
+        requestId.setFromUserId(fromId);
+        requestId.setToUserId(studentList.get(p).getUserId());
+        requestId.setModuleId(moduleId);
+        Request request = new Request();
+        request.setToUserName(userTo.getUserName());
+        //set the name to sharedpreference and retrieve from there.
+        request.setFromUserName("Garima Singh");
+        request.setFlag(0);
+        request.setRequestId(requestId);
+        sendRequest(request);
     }
 
-    @Override
-    public void OnRequestItemClick(int p) {
-        Log.i(TAG, "I am sending a request to the desired student");
+    private void sendRequest(Request request) {
+        RequestService.Factory.getInstance().addRequest(fromId, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i(TAG, "Request successfully created");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Request creation failed");
+            }
+        });
     }
+
 }

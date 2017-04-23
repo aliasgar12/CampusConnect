@@ -64,7 +64,8 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
         myRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent (DashboardActivity.this , RequestActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -17,7 +17,6 @@ public class Subject{
 	String subjectName;
 //	private Set<Module> modules = new HashSet<>();
 	private Set<UserDetails> studentList = new HashSet<>();
-//	private Set<Request> requestList = new HashSet<>();
 //	private Department dept;
 //	private College college;
 
@@ -62,13 +61,7 @@ public class Subject{
 		this.studentList = studentList;
 	}
 //
-//	//RequestList
-//	public Set<Request> getRequestList() {
-//		return requestList;
-//	}
-//	public void setRequestList(Set<Request> requestList) {
-//		this.requestList = requestList;
-//	}
+
 //
 //	//Department
 //	public Department getDept() {

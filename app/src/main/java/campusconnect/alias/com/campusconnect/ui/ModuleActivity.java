@@ -97,14 +97,14 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
     @Override
     public void OnItemClick(int p) {
         final Module moduleClicked = mod.get(p);
-        int moduleId = moduleClicked.getModuleId();
+        final int moduleId = moduleClicked.getModuleId();
         ModuleService.Factory.getInstance().getStudents(uid,subjectId, moduleId ).enqueue(new Callback<List<UserDetails>>() {
             @Override
             public void onResponse(Call<List<UserDetails>> call, Response<List<UserDetails>> response) {
                 Log.i(TAG, "Getting Student list for the module " + moduleClicked.getModuleName());
                 Log.i(TAG,response.message());
                 List<UserDetails> studentList = response.body();
-                onSuccess(uid, studentList);
+                onSuccess(uid, studentList, moduleId);
 
             }
 
@@ -146,10 +146,11 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
     }
 
 
-    public void onSuccess(int uid , List<UserDetails> studentList) {
+    public void onSuccess(int uid , List<UserDetails> studentList , int moduleId) {
         Intent intent = new Intent(getBaseContext(), StudentActivity.class);
         intent.putExtra("studentList", Parcels.wrap(studentList));
         intent.putExtra("uid", uid);
+        intent.putExtra("moduleId", moduleId);
         startActivity(intent);
     }
 }

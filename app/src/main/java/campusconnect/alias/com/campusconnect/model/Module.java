@@ -12,6 +12,7 @@ public class Module {
 	private String moduleName;
 	private Subject subjectId; // subjectID
 	Set<UserDetails> user = new HashSet<>();
+	//	private Set<Request> requestList = new HashSet<>();
 
 	//Getters and Setters
 	public Subject getSubjectId() {
@@ -41,4 +42,12 @@ public class Module {
 	public void setModuleId(int moduleId) {
 		this.moduleId = moduleId;
 	}
+
+    //	//RequestList
+//	public Set<Request> getRequestList() {
+//		return requestList;
+//	}
+//	public void setRequestList(Set<Request> requestList) {
+//		this.requestList = requestList;
+//	}
 }

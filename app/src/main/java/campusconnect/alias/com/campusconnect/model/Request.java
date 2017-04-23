@@ -6,7 +6,7 @@ import org.parceler.Parcel;
 public class Request {
 
 	private RequestId requestId;
-	private Subject subject;
+	private Module module;
 	private UserDetails userSent;
 	private UserDetails userReceived;
 	private int flag;
@@ -23,18 +23,14 @@ public class Request {
 		this.toUserName = toUserName;
 	}
 
+	public Module getModule() {return module;}
+	public void setModule(Module module) {this.module = module;}
+
 	public String getFromUserName() {
 		return fromUserName;
 	}
 	public void setFromUserName(String fromUserName) {
 		this.fromUserName = fromUserName;
-	}
-
-	public Subject getSubject() {
-		return subject;
-	}
-	public void setSubject(Subject subject) {
-		this.subject = subject;
 	}
 
 	public RequestId getRequestId() {

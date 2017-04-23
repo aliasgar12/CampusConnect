@@ -47,11 +47,6 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     private DatabaseHelper db;
     private Handler handler;
     private Handler recyclerViewHandler;
-    @BindView(R.id.spinner_college) Spinner spinnerCollege;
-    @BindView(R.id.spinner_dept) Spinner spinnerDept;
-    @BindView(R.id.btn_search) Button btn_search;
-    @BindView(R.id.input_subjectId) EditText subjectCRN;
-    @BindView(R.id.list_add_subject) RecyclerView recyclerView;
     private List<Subject> subjectList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private AddSubjectAdapter addSubjectAdapter;
@@ -62,6 +57,11 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     private static final int STEP_TWO_COMPLETE = 1;
     private static final int STEP_THREE_COMPLETE = 2;
     private static List<Subject> subjectAdded = new ArrayList<>();
+    @BindView(R.id.spinner_college) Spinner spinnerCollege;
+    @BindView(R.id.spinner_dept) Spinner spinnerDept;
+    @BindView(R.id.btn_search) Button btn_search;
+    @BindView(R.id.input_subjectId) EditText subjectCRN;
+    @BindView(R.id.list_add_subject) RecyclerView recyclerView;
 
 
     @Override

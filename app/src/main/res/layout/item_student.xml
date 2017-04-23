@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="70dp"
     android:id="@+id/cont_root_student"
-    android:maxWidth="50dp"
     android:clickable="true">
 
     <TextView
@@ -15,14 +14,16 @@
         android:layout_marginRight="60dp"
         android:id="@+id/item_student_name"
         android:maxLines="1"
-        android:textSize="40dp"/>
+        android:textSize="25sp"/>
 
     <ImageView
         android:layout_width="60dp"
-        android:layout_height="match_parent"
+        android:layout_height="36dp"
         android:id="@+id/item_icon_request"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_check_circle_white_36dp"
+        android:visibility="gone"
         android:layout_centerVertical="true"/>
+
 
 </RelativeLayout>
