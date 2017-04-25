@@ -37,6 +37,7 @@ public class RequestActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private static int uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,8 @@ public class RequestActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        uid = getIntent().getIntExtra("uid", 0);
 
     }
 
@@ -119,9 +122,15 @@ public class RequestActivity extends AppCompatActivity {
             switch (position){
                 case 0:
                     RequestSentActivity requestSentActivity = new RequestSentActivity();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("uid", uid);
+                    requestSentActivity.setArguments(bundle);
                     return requestSentActivity;
                 case 1:
                     RequestReceivedActivity requestReceivedActivity = new RequestReceivedActivity();
+                    Bundle bundle_received = new Bundle();
+                    bundle_received.putInt("uid", uid);
+                    requestReceivedActivity.setArguments(bundle_received);
                     return requestReceivedActivity;
             }
             return null;

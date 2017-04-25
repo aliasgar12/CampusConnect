@@ -1,11 +1,15 @@
 package campusconnect.alias.com.campusconnect.web.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import campusconnect.alias.com.campusconnect.model.Module;
 import campusconnect.alias.com.campusconnect.model.Request;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -20,10 +24,16 @@ public interface RequestService {
     @POST("{userId}/request")
     Call<Void> addRequest(@Path("userId") int userId, @Body Request request);
 
+
+    @GET("{userId}/request/sent")
+    Call<ArrayList<Request>> getSentRequest(@Path("userId") int userId);
+
+    @GET("{userId}/request/received")
+    Call<ArrayList<Request>> getReceivedRequest(@Path("userId") int userId);
+
     class Factory{
 
         private static RequestService service;
-
         public static RequestService getInstance(){
             if(service == null){
                 Retrofit retrofit = new Retrofit.Builder()
