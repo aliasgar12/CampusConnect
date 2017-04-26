@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 
 public class RequestActivity extends AppCompatActivity {
 
@@ -57,8 +58,10 @@ public class RequestActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        uid = getIntent().getIntExtra("uid", 0);
-
+        if(SharedPrefManager.getInstance(this).getUserId() == null)
+            uid = getIntent().getIntExtra("uid", 0);
+        else
+            uid = SharedPrefManager.getInstance(this).getUserId();
     }
 
 

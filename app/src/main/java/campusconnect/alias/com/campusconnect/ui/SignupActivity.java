@@ -37,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 
 
@@ -57,6 +58,17 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
+
+
+        // if shared preference has logged in set to true, redirect to dashboard activity.
+        boolean login_status = SharedPrefManager.getInstance(this).getLoginStatus();
+        if(login_status == true){
+            Log.i(TAG, "Shared preference login status" + login_status );
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        }else
+            Log.i(TAG, "Shared preference login status" + login_status );
+
 
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +91,7 @@ public class SignupActivity extends AppCompatActivity {
     public void signup() {
         Log.d(TAG, "Signup");
 
+        //validating input
         if (!validate()) {
             onSignupFailed();
             return;
@@ -91,6 +104,7 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
+
 
         String name = _nameText.getText().toString();
         String email = _emailText.getText().toString();
@@ -120,7 +134,6 @@ public class SignupActivity extends AppCompatActivity {
         Intent intent = new Intent(SignupActivity.this,LoginActivity.class );
         startActivity(intent);
 
-//        finish();
     }
 
     public void onSignupFailed() {

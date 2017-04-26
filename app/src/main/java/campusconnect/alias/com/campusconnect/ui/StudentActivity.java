@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.StudentAdapter;
+import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 import campusconnect.alias.com.campusconnect.model.Request;
 import campusconnect.alias.com.campusconnect.model.RequestId;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
@@ -65,8 +66,7 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
         requestId.setModuleId(moduleId);
         Request request = new Request();
         request.setToUserName(userTo.getUserName());
-        //set the name to sharedpreference and retrieve from there.
-        request.setFromUserName("Garima Singh");
+        request.setFromUserName(SharedPrefManager.getInstance(this).getUserName());
         request.setFlag(0);
         request.setRequestId(requestId);
         sendRequest(request);
@@ -76,7 +76,13 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
         RequestService.Factory.getInstance().addRequest(fromId, request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.i(TAG, "Request successfully created");
+                Log.i(TAG, response.message());
+                if(response.code()==200) {
+                    Toast.makeText(getBaseContext(), "Request successfully created", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "Request successfully created");
+                }else
+                    Toast.makeText(getBaseContext(), "Request Failed", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override

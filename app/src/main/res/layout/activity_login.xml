@@ -27,8 +27,8 @@
             <EditText android:id="@+id/input_uid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="University ID (skip U)" />
+                android:inputType="number"
+                android:hint="University ID (skip U)"/>
         </android.support.design.widget.TextInputLayout>
 
         <!-- Password Label -->

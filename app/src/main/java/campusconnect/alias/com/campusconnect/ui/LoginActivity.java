@@ -20,6 +20,7 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 import campusconnect.alias.com.campusconnect.model.Subject;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.web.services.LoginService;
@@ -60,6 +61,17 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
+
+        if(SharedPrefManager.getInstance(this).getLoginStatus() == true){
+            Log.i(TAG, "setting fields automatically and logging in");
+            _uid.setVisibility(View.INVISIBLE);
+            _passwordText.setVisibility(View.INVISIBLE);
+            _loginButton.setVisibility(View.INVISIBLE);
+            _signupLink.setVisibility(View.INVISIBLE);
+            _uid.setText("0" + SharedPrefManager.getInstance(this).getUserId());
+            _passwordText.setText(SharedPrefManager.getInstance(this).getPassword());
+            _loginButton.performClick();
+        }
     }
 
     public void login() {
@@ -93,11 +105,11 @@ public class LoginActivity extends AppCompatActivity {
                 if(response.code()==200) {
                     Set<Subject> subjectList = response.body().getSubjectList();
                     Log.i(TAG, "Getting Response");
-                    int uid = response.body().getUserId();
+                    UserDetails user = response.body();
                     for (Subject sub : subjectList)
                         Log.i(TAG, sub.getSubjectName());
                     progressDialog.dismiss();
-                    onLoginSuccess(uid, subjectList);
+                    onLoginSuccess(user, subjectList);
                 }
                 else{
                     progressDialog.dismiss();
@@ -142,14 +154,29 @@ public class LoginActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-    public void onLoginSuccess(int uid , Set<Subject> subjectList) {
+    public void onLoginSuccess(UserDetails user , Set<Subject> subjectList) {
         _loginButton.setEnabled(true);
+        if(SharedPrefManager.getInstance(this).getUserName() == null) {
+            Log.i(TAG, "Setting shared preferences values for the first time");
+            saveToSharedPref(user);
+        }
         finish();
         Intent intent = new Intent(getBaseContext(),DashboardActivity.class);
         intent.putExtra("subjectList", Parcels.wrap(subjectList));
-        intent.putExtra("uid", uid);
+        intent.putExtra("uid", user.getUserId());
         intent.putExtra("activity", TAG);
         startActivity(intent);
+    }
+
+    private void saveToSharedPref(UserDetails user) {
+        SharedPrefManager.getInstance(this).storeUsername(user.getUserName());
+        SharedPrefManager.getInstance(this).storeUserId(user.getUserId());
+        SharedPrefManager.getInstance(this).storePassword(user.getPassword());
+        SharedPrefManager.getInstance(this).storeEmail(user.getEmail());
+        SharedPrefManager.getInstance(this).saveLoginStatus(true);
+        Log.i(TAG, "Saved shared preferences");
+
+
     }
 
     public void onLoginFailed() {
