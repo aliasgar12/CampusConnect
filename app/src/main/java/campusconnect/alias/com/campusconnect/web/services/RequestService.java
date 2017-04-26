@@ -13,6 +13,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -35,6 +36,9 @@ public interface RequestService {
 
     @HTTP(method = "DELETE", path = "{userId}/request", hasBody = true)
     Call<Void> deleteRequest (@Path("userId") int id, @Body Request request);
+
+    @PUT("{userId}/request/accept")
+    Call<Void> acceptRequest(@Path("userId") int userId, @Body Request request);
 
 
     class Factory{

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,9 @@ import retrofit2.Response;
  * Created by alias on 4/23/2017.
  */
 
-public class RequestReceivedActivity extends Fragment implements RequestReceivedAdapter.ItemClickCallback {
+public class RequestReceivedActivity extends Fragment{
+
+//     implements RequestReceivedAdapter.ItemClickCallback
 
     private String TAG = "RequestReceivedActivity";
     private LinearLayoutManager linearLayoutManager;
@@ -50,10 +53,17 @@ public class RequestReceivedActivity extends Fragment implements RequestReceived
         recyclerView.setLayoutManager(linearLayoutManager);
         requestReceivedAdapter = new RequestReceivedAdapter(requests);
         recyclerView.setAdapter(requestReceivedAdapter);
-        requestReceivedAdapter.setItemClickCallback(RequestReceivedActivity.this);
+//        requestReceivedAdapter.setItemClickCallback(RequestReceivedActivity.this);
+
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+
         Log.i(TAG,"OnCreate ended");
         return rootView;
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -108,11 +118,86 @@ public class RequestReceivedActivity extends Fragment implements RequestReceived
         });
 
     }
+//
+//    @Override
+//    public void OnItemClick(int p) {
+//
+//        Log.i(TAG, "Received Request Clicked");
+//    }
 
-    @Override
-    public void OnItemClick(int p) {
+    private ItemTouchHelper.Callback createHelperCallback() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
 
-        Log.i(TAG, "Received Request Clicked");
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                if(direction == ItemTouchHelper.LEFT){
+                    rejectRequest(viewHolder.getAdapterPosition());
+                }else{
+                    acceptRequest(viewHolder.getAdapterPosition());
+                }
+            }
+        };
+        return simpleItemTouchCallback;
     }
+
+
+
+    private void rejectRequest(final int adapterPosition) {
+        final Request request = requests.get(adapterPosition);
+        RequestService.Factory.getInstance().deleteRequest(uid, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code()==200){
+                    Log.i(TAG, "Request removed" );
+                    Toast.makeText(getActivity(), "Request to " + request.getToUserName()+ " removed",Toast.LENGTH_SHORT ).show();
+                    requests.remove(adapterPosition);
+                    requestReceivedAdapter.notifyDataSetChanged();
+                }
+                else {
+                    Toast.makeText(getActivity(), "Failed to remove request",Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "Failed to remove request to " + request.getToUserName());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Failed to complete request");
+                Toast.makeText(getActivity(), "Failed to complete request to server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void acceptRequest(final int adapterPosition) {
+        final Request request = requests.get(adapterPosition);
+        RequestService.Factory.getInstance().acceptRequest(uid, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code()==200){
+                    Log.i(TAG, "Request from student " +  request.getFromUserName() + " accepted");
+                    Toast.makeText(getActivity(),"Request from student " +  request.getFromUserName() + " accepted",
+                            Toast.LENGTH_SHORT ).show();
+                    requests.remove(adapterPosition);
+                    requestReceivedAdapter.notifyDataSetChanged();
+                }else{
+                    Toast.makeText(getActivity(),"Failed to accept request from " +  request.getFromUserName(),
+                            Toast.LENGTH_SHORT ).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Failed to accept request - server error");
+                Toast.makeText(getActivity(),"Failed to accept request",Toast.LENGTH_SHORT ).show();
+            }
+        });
+    }
+
 }
 
