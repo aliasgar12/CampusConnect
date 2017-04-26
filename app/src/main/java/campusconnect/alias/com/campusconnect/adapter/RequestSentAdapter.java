@@ -21,7 +21,7 @@ import campusconnect.alias.com.campusconnect.ui.RequestSentActivity;
 public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.ViewHolder> {
 
     private ArrayList<Request> sentRequests = new ArrayList<>();
-    private ItemClickCallback itemClickCallback;
+//    private ItemClickCallback itemClickCallback;
     private String TAG = "RequestSentAdapter";
 
 
@@ -29,13 +29,13 @@ public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.
         this.sentRequests = requests;
     }
 
-    public interface ItemClickCallback{
-        void OnItemClick(int p);
-    }
+//    public interface ItemClickCallback{
+//        void OnItemClick(int p);
+//    }
 
-    public void setItemClickCallback(ItemClickCallback itemClickCallback){
-        this.itemClickCallback = itemClickCallback;
-    }
+//    public void setItemClickCallback(ItemClickCallback itemClickCallback){
+//        this.itemClickCallback = itemClickCallback;
+//    }
 
 
     @Override
@@ -73,16 +73,16 @@ public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.
             moduleName = (TextView) itemView.findViewById(R.id.item_request_moduleName);
             container = itemView.findViewById(R.id.cont_root_request);
 
-            container.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (v.getId() == R.id.cont_root_request) {
-                        itemClickCallback.OnItemClick(getAdapterPosition());
-
-                    }
-                }
-
-            });
+//            container.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (v.getId() == R.id.cont_root_request) {
+//                        itemClickCallback.OnItemClick(getAdapterPosition());
+//
+//                    }
+//                }
+//
+//            });
         }
     }
 }

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,9 @@ import retrofit2.Response;
  * Created by alias on 4/23/2017.
  */
 
-public class RequestSentActivity extends Fragment implements RequestSentAdapter.ItemClickCallback{
+public class RequestSentActivity extends Fragment {
 
-
+//implements RequestSentAdapter.ItemClickCallback
     private String TAG = "RequestSentActivity";
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerView;
@@ -48,8 +49,11 @@ public class RequestSentActivity extends Fragment implements RequestSentAdapter.
         recyclerView.setLayoutManager(linearLayoutManager);
         requestSentAdapter = new RequestSentAdapter(requests);
         recyclerView.setAdapter(requestSentAdapter);
-        requestSentAdapter.setItemClickCallback(RequestSentActivity.this);
         Log.i(TAG,"OnCreate ended");
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
         return rootView;
     }
 
@@ -104,8 +108,44 @@ public class RequestSentActivity extends Fragment implements RequestSentAdapter.
 
     }
 
-    @Override
-    public void OnItemClick(int p) {
-        Log.i(TAG, "Sent Request Clicked");
+
+    private ItemTouchHelper.Callback createHelperCallback(){
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                delete(viewHolder.getAdapterPosition());
+            }
+        };
+        return simpleItemTouchCallback;
+    }
+
+    private void delete(final int adapterPosition) {
+        final Request request = requests.get(adapterPosition);
+        RequestService.Factory.getInstance().deleteRequest(uid, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code()==200){
+                    Log.i(TAG, "Request removed" );
+                    Toast.makeText(getActivity(), "Request to " + request.getToUserName()+ " removed",Toast.LENGTH_SHORT ).show();
+                    requests.remove(adapterPosition);
+                    requestSentAdapter.notifyDataSetChanged();
+                }
+                else {
+                    Toast.makeText(getActivity(), "Failed to remove request",Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "Failed to remove request to " + request.getToUserName());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Failed to complete request");
+                Toast.makeText(getActivity(), "Failed to complete request to server", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

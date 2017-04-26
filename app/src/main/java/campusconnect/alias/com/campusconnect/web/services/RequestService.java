@@ -5,11 +5,13 @@ import java.util.List;
 
 import campusconnect.alias.com.campusconnect.model.Module;
 import campusconnect.alias.com.campusconnect.model.Request;
+import campusconnect.alias.com.campusconnect.model.Subject;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -30,6 +32,10 @@ public interface RequestService {
 
     @GET("{userId}/request/received")
     Call<ArrayList<Request>> getReceivedRequest(@Path("userId") int userId);
+
+    @HTTP(method = "DELETE", path = "{userId}/request", hasBody = true)
+    Call<Void> deleteRequest (@Path("userId") int id, @Body Request request);
+
 
     class Factory{
 

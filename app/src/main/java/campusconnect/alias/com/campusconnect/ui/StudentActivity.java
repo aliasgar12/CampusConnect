@@ -78,8 +78,11 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, response.message());
                 if(response.code()==200) {
-                    Toast.makeText(getBaseContext(), "Request successfully created", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Request successfully created", Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "Request successfully created");
+                }else if (response.code()== 409){
+                    Toast.makeText(getBaseContext(), "Request already exist", Toast.LENGTH_SHORT).show();
+
                 }else
                     Toast.makeText(getBaseContext(), "Request Failed", Toast.LENGTH_SHORT).show();
 
