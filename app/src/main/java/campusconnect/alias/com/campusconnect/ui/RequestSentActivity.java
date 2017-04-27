@@ -84,6 +84,11 @@ public class RequestSentActivity extends Fragment {
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        requests.clear();
+    }
 
     private void loadSentRequest() {
 

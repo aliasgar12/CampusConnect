@@ -34,6 +34,9 @@ public interface RequestService {
     @GET("{userId}/request/received")
     Call<ArrayList<Request>> getReceivedRequest(@Path("userId") int userId);
 
+    @GET("{userId}/request/accepted")
+    Call<ArrayList<Request>> getAcceptedRequest(@Path("userId") int userId);
+
     @HTTP(method = "DELETE", path = "{userId}/request", hasBody = true)
     Call<Void> deleteRequest (@Path("userId") int id, @Body Request request);
 

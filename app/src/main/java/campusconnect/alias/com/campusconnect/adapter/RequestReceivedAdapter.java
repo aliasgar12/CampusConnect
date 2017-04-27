@@ -16,7 +16,6 @@ import campusconnect.alias.com.campusconnect.model.Request;
 public class RequestReceivedAdapter extends RecyclerView.Adapter<RequestReceivedAdapter.ViewHolder> {
 
     private ArrayList<Request> receivedRequests = new ArrayList<>();
-    private ItemClickCallback itemClickCallback;
     private String TAG = "RequestReceivedAdapter";
 
 
@@ -24,18 +23,8 @@ public class RequestReceivedAdapter extends RecyclerView.Adapter<RequestReceived
         this.receivedRequests = requests;
     }
 
-    public interface ItemClickCallback{
-        void OnItemClick(int p);
-    }
-
-    public void setItemClickCallback(ItemClickCallback itemClickCallback){
-        this.itemClickCallback = itemClickCallback;
-    }
-
-
     @Override
     public RequestReceivedAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//      View v = LayoutInflater.from(requestSentActivity).inflate(R.layout.item_request,parent, false);
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_request, parent, false);
         return new ViewHolder(v);
     }
@@ -68,16 +57,6 @@ public class RequestReceivedAdapter extends RecyclerView.Adapter<RequestReceived
             moduleName = (TextView) itemView.findViewById(R.id.item_request_moduleName);
             container = itemView.findViewById(R.id.cont_root_request);
 
-            container.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (v.getId() == R.id.cont_root_request) {
-                        itemClickCallback.OnItemClick(getAdapterPosition());
-
-                    }
-                }
-
-            });
         }
     }
 }

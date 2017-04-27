@@ -65,50 +65,50 @@ public class RequestActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_request, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_request, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_request, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
+//    /**
+//     * A placeholder fragment containing a simple view.
+//     */
+//    public static class PlaceholderFragment extends Fragment {
+//        /**
+//         * The fragment argument representing the section number for this
+//         * fragment.
+//         */
+//        private static final String ARG_SECTION_NUMBER = "section_number";
+//
+//        public PlaceholderFragment() {
+//        }
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                                 Bundle savedInstanceState) {
+//            View rootView = inflater.inflate(R.layout.fragment_request, container, false);
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+//            return rootView;
+//        }
+//    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -125,9 +125,9 @@ public class RequestActivity extends AppCompatActivity {
             switch (position){
                 case 0:
                     RequestSentActivity requestSentActivity = new RequestSentActivity();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("uid", uid);
-                    requestSentActivity.setArguments(bundle);
+                    Bundle bundle_sent = new Bundle();
+                    bundle_sent.putInt("uid", uid);
+                    requestSentActivity.setArguments(bundle_sent);
                     return requestSentActivity;
                 case 1:
                     RequestReceivedActivity requestReceivedActivity = new RequestReceivedActivity();
@@ -135,14 +135,20 @@ public class RequestActivity extends AppCompatActivity {
                     bundle_received.putInt("uid", uid);
                     requestReceivedActivity.setArguments(bundle_received);
                     return requestReceivedActivity;
+                case 2:
+                    RequestAcceptedActivity requestAcceptedActivity = new RequestAcceptedActivity();
+                    Bundle bundle_accepted = new Bundle();
+                    bundle_accepted.putInt("uid", uid);
+                    requestAcceptedActivity.setArguments(bundle_accepted);
+                    return requestAcceptedActivity;
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            // Show 2 total pages.
-            return 2;
+            // Show 3 total pages.
+            return 3;
         }
 
         @Override
@@ -152,6 +158,8 @@ public class RequestActivity extends AppCompatActivity {
                     return "Sent";
                 case 1:
                     return "Received";
+                case 2:
+                    return "Accepted";
             }
             return null;
         }

@@ -9,6 +9,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import campusconnect.alias.com.campusconnect.notification.MyNotificationManager;
 import campusconnect.alias.com.campusconnect.ui.DashboardActivity;
 import campusconnect.alias.com.campusconnect.ui.RequestActivity;
+import campusconnect.alias.com.campusconnect.ui.RequestReceivedActivity;
 
 /**
  * Created by alias on 4/21/2017.

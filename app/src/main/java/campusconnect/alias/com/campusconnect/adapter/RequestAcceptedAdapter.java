@@ -12,21 +12,22 @@ import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.model.Request;
 
 /**
- * Created by alias on 4/23/2017.
+ * Created by alias on 4/27/2017.
  */
 
-public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.ViewHolder> {
+public class RequestAcceptedAdapter extends RecyclerView.Adapter<RequestAcceptedAdapter.ViewHolder> {
 
-    private ArrayList<Request> sentRequests = new ArrayList<>();
-    private String TAG = "RequestSentAdapter";
+    private ArrayList<Request> acceptedRequests = new ArrayList<>();
+    private String TAG = "RequestAcceptedAdapter";
 
 
-    public RequestSentAdapter( ArrayList<Request> requests){
-        this.sentRequests = requests;
+    public RequestAcceptedAdapter( ArrayList<Request> requests){
+        this.acceptedRequests = requests;
     }
 
+
     @Override
-    public RequestSentAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RequestAcceptedAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 //      View v = LayoutInflater.from(requestSentActivity).inflate(R.layout.item_request,parent, false);
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_request, parent, false);
         return new ViewHolder(v);
@@ -34,14 +35,14 @@ public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.
 
 
     @Override
-    public void onBindViewHolder(RequestSentAdapter.ViewHolder holder, int position) {
-        holder.userName.setText(sentRequests.get(position).getToUserName());
-        holder.moduleName.setText(String.valueOf(sentRequests.get(position).getRequestId().getModuleId()));
+    public void onBindViewHolder(RequestAcceptedAdapter.ViewHolder holder, int position) {
+        holder.userName.setText(acceptedRequests.get(position).getFromUserName());
+        holder.moduleName.setText(String.valueOf(acceptedRequests.get(position).getRequestId().getModuleId()));
     }
 
     @Override
     public int getItemCount() {
-        return sentRequests.size();
+        return acceptedRequests.size();
     }
 
 
@@ -60,6 +61,16 @@ public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.
             moduleName = (TextView) itemView.findViewById(R.id.item_request_moduleName);
             container = itemView.findViewById(R.id.cont_root_request);
 
+//            container.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (v.getId() == R.id.cont_root_request) {
+//                        itemClickCallback.OnItemClick(getAdapterPosition());
+//
+//                    }
+//                }
+//
+//            });
         }
     }
 }
