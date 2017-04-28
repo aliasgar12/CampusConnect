@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
             saveToSharedPref(user);
         }
         finish();
-        Intent intent = new Intent(getBaseContext(),DashboardActivity.class);
+        Intent intent = new Intent(getBaseContext(),NavigationDrawer.class);
         intent.putExtra("subjectList", Parcels.wrap(subjectList));
         intent.putExtra("uid", user.getUserId());
         intent.putExtra("activity", TAG);

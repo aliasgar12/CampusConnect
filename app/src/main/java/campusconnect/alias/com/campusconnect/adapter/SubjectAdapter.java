@@ -37,14 +37,14 @@ import campusconnect.alias.com.campusconnect.ui.DashboardActivity;
         this.itemClickCallback = itemClickCallback;
     }
 
-    public SubjectAdapter(DashboardActivity dashboardActivity, ArrayList<Subject> subjectList){
-        this.dashboardActivity = dashboardActivity;
+    public SubjectAdapter(ArrayList<Subject> subjectList){
+//        this.dashboardActivity = dashboardActivity;
         this.subjectList = subjectList;
     }
 
     @Override
     public SubjectAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(dashboardActivity).inflate(R.layout.item_subject,parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_subject,parent, false);
         return new ViewHolder(v);
     }
 

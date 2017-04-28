@@ -1,13 +1,17 @@
 package campusconnect.alias.com.campusconnect.ui;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 import org.parceler.Parcels;
@@ -25,46 +29,49 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.Activity.RESULT_OK;
 
-public class DashboardActivity extends AppCompatActivity implements SubjectAdapter.ItemClickCallback{
+
+public class DashboardActivity extends Fragment implements SubjectAdapter.ItemClickCallback{
 
     private static final String TAG = "DashboardActivity";
     private ArrayList<Subject> subList;
     private SubjectAdapter subjectAdapter;
+//    private Button myRequest;
     @BindView(R.id.show_request) Button myRequest;
     @BindView(R.id.add_courses) Button addCourse;
     @BindView(R.id.listSubject) RecyclerView recyclerView;
-    @BindView(R.id.toolbar) Toolbar toolbar;
     private LinearLayoutManager linearLayoutManager;
     private static int uid;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
 
         subList = new ArrayList<>();
 
-//        Log.i(TAG, SharedPrefManager.getInstance(this).getToken());
-
-
-        // get intent values from previous activity
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
         uid = intent.getIntExtra("uid", 0);
-        Set<Subject> subjectList = Parcels.unwrap(getIntent().getParcelableExtra("subjectList"));
+        Set<Subject> subjectList = Parcels.unwrap(getActivity().getIntent().getParcelableExtra("subjectList"));
         subList = new ArrayList<>(subjectList);
         Log.i(TAG, "Getting the subject list");
         Log.i(TAG, "Getting the subject list");
         Log.i(TAG, "Getting the subject list");
+    }
 
-//         button listeners for myrequest and addcourse
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.activity_dashboard, container, false);
+        ButterKnife.bind(this,view);
+        getActivity().setTitle("Dashboard");
+
         myRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent (DashboardActivity.this , RequestActivity.class);
+                Intent intent = new Intent (getActivity(), RequestActivity.class);
                 intent.putExtra("uid",uid );
                 startActivity(intent);
             }
@@ -73,31 +80,33 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
         addCourse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DashboardActivity.this, AddCourseActivity.class);
+                Intent intent = new Intent(getActivity(), AddCourseActivity.class);
                 intent.putExtra("uid", uid);
                 startActivityForResult(intent,101);
             }
         });
 
         Log.i(TAG, "setting the adapter");
-        subjectAdapter = new SubjectAdapter(this,subList);
-        linearLayoutManager = new LinearLayoutManager(this);
+        subjectAdapter = new SubjectAdapter(subList);
+        linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(subjectAdapter);
         subjectAdapter.setItemClickCallback(this);
 
 
+        return view;
     }
 
 
+
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         Log.i(TAG, "This is onResume");
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "This is onActivityResult");
 //        Log.i(TAG,String.valueOf(requestCode));
@@ -117,13 +126,13 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
                 subjectAdapter.notifyDataSetChanged();
             }
         }
-
     }
+
 
 
     @Override
     public void OnItemClick(int p) {
-        Intent intent = new Intent(DashboardActivity.this, ModuleActivity.class);
+        Intent intent = new Intent(getActivity(), ModuleActivity.class);
         intent.putExtra("subjectId", subList.get(p).getSubjectCRN());
         intent.putExtra("userId",uid);
         startActivity(intent);
@@ -141,7 +150,7 @@ public class DashboardActivity extends AppCompatActivity implements SubjectAdapt
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, "Subject Removed" + subRemoved.getSubjectName());
-                Toast.makeText(getBaseContext(),"Subject Deleted" + subRemoved.getSubjectName(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Subject Deleted" + subRemoved.getSubjectName(),Toast.LENGTH_LONG).show();
             }
 
             @Override

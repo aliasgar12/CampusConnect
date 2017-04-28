@@ -6,11 +6,6 @@
     android:layout_height="match_parent"
     tools:context="campusconnect.alias.com.campusconnect.ui.DashboardActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar"
-        />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listSubject"
         android:layout_below="@+id/toolbar"
