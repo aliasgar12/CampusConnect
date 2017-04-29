@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             _loginButton.performClick();
         }
 
-        
+
     }
 
     public void login() {
@@ -175,7 +175,6 @@ public class LoginActivity extends AppCompatActivity {
         SharedPrefManager.getInstance(this).storeUserId(user.getUserId());
         SharedPrefManager.getInstance(this).storePassword(user.getPassword());
         SharedPrefManager.getInstance(this).storeEmail(user.getEmail());
-        SharedPrefManager.getInstance(this).saveLoginStatus(true);
         Log.i(TAG, "Saved shared preferences");
 
 

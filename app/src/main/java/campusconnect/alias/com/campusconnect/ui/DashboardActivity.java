@@ -28,7 +28,9 @@ import campusconnect.alias.com.campusconnect.adapter.SubjectAdapter;
 import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 import campusconnect.alias.com.campusconnect.firebase.MyFirebaseInstanceIdService;
 import campusconnect.alias.com.campusconnect.model.Subject;
+import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.web.services.SubjectService;
+import campusconnect.alias.com.campusconnect.web.services.TokenService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,6 +64,35 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
         subList = new ArrayList<>(subjectList);
         Log.i(TAG, "Getting the subject list");
 
+
+        //setting the token for logged in user
+        if(!SharedPrefManager.getInstance(getContext()).getLoginStatus()) {
+            String app_token = SharedPrefManager.getInstance(getContext()).getToken();
+            Log.i(TAG, "Setting token for new user");
+            setToken(app_token);
+        }
+
+    }
+
+    private void setToken(String app_token) {
+        UserDetails user = new UserDetails();
+        user.setUserId(SharedPrefManager.getInstance(getContext()).getUserId());
+        user.setApp_token(app_token);
+        TokenService.Factory.getInstance().setToken(user).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code()==200) {
+                    Log.i(TAG, "Token saved to server db");
+                    Log.i(TAG, "Saving Login Status to Shared Pref");
+                    SharedPrefManager.getInstance(getContext()).saveLoginStatus(true);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 
     @Nullable
@@ -163,4 +194,6 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
             }
         });
     }
+
+
 }
