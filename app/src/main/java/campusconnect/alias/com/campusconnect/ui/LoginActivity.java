@@ -72,6 +72,8 @@ public class LoginActivity extends AppCompatActivity {
             _passwordText.setText(SharedPrefManager.getInstance(this).getPassword());
             _loginButton.performClick();
         }
+
+        
     }
 
     public void login() {

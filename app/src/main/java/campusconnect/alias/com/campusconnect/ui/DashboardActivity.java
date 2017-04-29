@@ -1,6 +1,9 @@
 package campusconnect.alias.com.campusconnect.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +26,7 @@ import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.SubjectAdapter;
 import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
+import campusconnect.alias.com.campusconnect.firebase.MyFirebaseInstanceIdService;
 import campusconnect.alias.com.campusconnect.model.Subject;
 import campusconnect.alias.com.campusconnect.web.services.SubjectService;
 import retrofit2.Call;
@@ -43,6 +47,7 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     @BindView(R.id.listSubject) RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private static int uid;
+    private BroadcastReceiver broadcastReceiver;
 
 
     @Override
@@ -56,8 +61,7 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
         Set<Subject> subjectList = Parcels.unwrap(getActivity().getIntent().getParcelableExtra("subjectList"));
         subList = new ArrayList<>(subjectList);
         Log.i(TAG, "Getting the subject list");
-        Log.i(TAG, "Getting the subject list");
-        Log.i(TAG, "Getting the subject list");
+
     }
 
     @Nullable

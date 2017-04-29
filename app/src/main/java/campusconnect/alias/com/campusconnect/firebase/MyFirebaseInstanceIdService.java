@@ -15,7 +15,7 @@ import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
 
     private String TAG = "MyFireBaseService";
-    private String TOKEN_BROADCAST = "token_broadcast";
+    public static final String TOKEN_BROADCAST = "token_broadcast";
 
     @Override
     public void onTokenRefresh() {

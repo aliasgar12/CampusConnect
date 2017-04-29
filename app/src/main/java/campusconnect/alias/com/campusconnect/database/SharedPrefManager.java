@@ -113,6 +113,12 @@ public class SharedPrefManager {
     public void clear(){
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear().commit();
+        editor.remove(KEY_USERID);
+        editor.remove(KEY_PASSWORD);
+        editor.remove(KEY_EMAIL);
+        editor.remove(KEY_USERNAME);
+        editor.remove(IS_LOGGED_IN);
+        editor.commit();
+
     }
 }

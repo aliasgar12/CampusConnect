@@ -28,7 +28,6 @@ public class SignOutActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.activity_sign_out,container,false);
-        TextView signOut = (TextView) view.findViewById(R.id.sign_out);
         return view;
     }
 

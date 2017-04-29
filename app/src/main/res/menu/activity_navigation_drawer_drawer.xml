@@ -6,18 +6,18 @@
             android:id="@+id/nav_dashboard"
             android:icon="@drawable/ic_dashboard_white_18dp"
             android:title="Dashboard" />
-        <item
-            android:id="@+id/nav_requests"
-            android:icon="@drawable/ic_help_white_18dp"
-            android:title="My Requests" />
+        <!--<item-->
+            <!--android:id="@+id/nav_requests"-->
+            <!--android:icon="@drawable/ic_help_white_18dp"-->
+            <!--android:title="My Requests" />-->
         <item
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_chat_white_18dp"
             android:title="Chat" />
-        <item
-            android:id="@+id/nav_courses"
-            android:icon="@drawable/ic_add_white_18dp"
-            android:title="Add Courses" />
+        <!--<item-->
+            <!--android:id="@+id/nav_courses"-->
+            <!--android:icon="@drawable/ic_add_white_18dp"-->
+            <!--android:title="Add Courses" />-->
         <item
             android:id="@+id/nav_studyRoom"
             android:icon="@drawable/ic_room_white_18dp"
