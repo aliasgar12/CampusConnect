@@ -89,6 +89,12 @@ public class NavigationDrawer extends AppCompatActivity
             case R.id.nav_dashboard:
                 fragment = new DashboardActivity();
                 break;
+            case R.id.nav_signOut:
+                fragment = new SignOutActivity();
+                break;
+            case R.id.nav_studyRoom:
+                fragment = new BookStudyRoomActivity();
+                break;
         }
 
         if (fragment != null) {

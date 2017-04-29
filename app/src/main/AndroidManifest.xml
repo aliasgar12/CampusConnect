@@ -49,7 +49,9 @@
         <activity
             android:name=".ui.NavigationDrawer"
             android:label="@string/title_activity_navigation_drawer"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ui.SignOutActivity" />
+        <activity android:name=".ui.BookStudyRoomActivity"></activity>
     </application>
 
 </manifest>

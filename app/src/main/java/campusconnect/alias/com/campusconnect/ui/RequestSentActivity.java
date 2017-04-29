@@ -97,6 +97,8 @@ public class RequestSentActivity extends Fragment {
             public void onResponse(Call<ArrayList<Request>> call, Response<ArrayList<Request>> response) {
                 if(response.code()==200) {
                     Log.i(TAG, "Got list of request from server");
+                    for(Request request:response.body())
+                        Log.i(TAG, request.getFromUserName());
                     requests.addAll(response.body());
                     Message msg = Message.obtain();
                     msg.what = FETCH_COMPLETE;
