@@ -82,6 +82,10 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
             setToken(app_token);
         }
 
+
+        //delete db for development purposes
+        getActivity().deleteDatabase("localDatabase.db");
+
         //initialize local database
         Log.i(TAG, "Initializing Local Database");
         dbHelper = new LocalDatabaseHelper(getContext());
@@ -189,10 +193,10 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     @Override
     public void OnDeleteItemClick(int p) {
         Subject subRemoved = subList.remove(p);
-        updateServerDb(uid, subRemoved);
+        deleteSubject(uid, subRemoved);
     }
 
-    private void updateServerDb(int uid, final Subject subRemoved) {
+    private void deleteSubject(int uid, final Subject subRemoved) {
 
         final String subjectName = subRemoved.getSubjectName();
         SubjectService.Factory.getInstance().deleteSubject(uid, subRemoved).enqueue(new Callback<Void>() {
@@ -201,7 +205,9 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
                 Log.i(TAG, "Subject Removed" + subjectName);
                 Toast.makeText(getActivity(), "Subject Deleted" + subjectName, Toast.LENGTH_LONG).show();
                 deleteSubjectFromLocalDb(subRemoved.getSubjectCRN(), subjectName);
+                deleteModulesToCurrentSubject(subRemoved.getSubjectCRN());
             }
+
 
             private void deleteSubjectFromLocalDb(int subjectCRN, String subjectName) {
                 dbHelper.open();
@@ -212,6 +218,14 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
                     Log.i(TAG, subjectName + " does not exist in local db");
             }
 
+            private void deleteModulesToCurrentSubject(int subjectCRN) {
+                dbHelper.open();
+                if (dbHelper.doesModulesExist(subjectCRN)) {
+                    dbHelper.deleteModulesBySubjectId(subjectCRN);
+                    Log.i(TAG, "Modules deleted for " + subjectName);
+                }
+            }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.i(TAG, "Could not connect to REST server");
@@ -220,7 +234,7 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     }
 
 
-    //check if the database exist in the localdb
+    //check if the database exist in the local db
     private static boolean doesDatabaseExist(Context context, String dbName) {
         File dbFile = context.getDatabasePath(dbName);
         Log.i(TAG, dbFile.toString());

@@ -54,21 +54,10 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
         db = this.getWritableDatabase();
     }
 
+
+    // Subject Helper Methods (Add , Delete and Check if exists)
+
     public void addSubject(int subjectId, String subjectName) {
-        MySubjects subTemp = new MySubjects();
-        subTemp.setSubjectCRN(subjectId);
-        subTemp.setSubjectName(subjectName);
-        cupboard().withDatabase(db).put(subTemp);
-    }
-
-    public void addModule(int subjectId, String subjectName) {
-        MySubjects subTemp = new MySubjects();
-        subTemp.setSubjectCRN(subjectId);
-        subTemp.setSubjectName(subjectName);
-        cupboard().withDatabase(db).put(subTemp);
-    }
-
-    public void addRequest(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
         subTemp.setSubjectCRN(subjectId);
         subTemp.setSubjectName(subjectName);
@@ -79,12 +68,63 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
         cupboard().withDatabase(db).delete(MySubjects.class, "subjectCRN = ?", String.valueOf(subjectId));
     }
 
-    public void deleteModule(int subjectId, String subjectName) {
+    public boolean doesSubjectExist(int subjectId) {
+        MySubjects subject;
+        subject = cupboard().withDatabase(db)
+                .query(MySubjects.class)
+                .withSelection("subjectCRN = ?", String.valueOf(subjectId))
+                .get();
+        if (subject != null)
+            return true;
+        return false;
+    }
+
+
+    // Module Helper Methods (Add , Delete and Check if exists)
+
+    public void addModule(int moduleId, String moduleName, int subjectId) {
+        MyModules modTemp = new MyModules();
+        modTemp.setModuleId(moduleId);
+        modTemp.setModuleName(moduleName);
+        modTemp.setSubjectCRN(subjectId);
+        cupboard().withDatabase(db).put(modTemp);
+    }
+
+    public void deleteModule(int moduleId) {
+        cupboard().withDatabase(db).delete(MyModules.class, "moduleId = ?", String.valueOf(moduleId));
+
+    }
+
+    public boolean doesModuleExist(int moduleId) {
+        MyModules module;
+        module = cupboard().withDatabase(db)
+                .query(MyModules.class)
+                .withSelection("moduleId = ?", String.valueOf(moduleId))
+                .get();
+        if (module != null)
+            return true;
+        return false;
+    }
+
+    public void moduleCompleted(int moduleId){
+        MyModules module;
+        module = cupboard().withDatabase(db)
+                .query(MyModules.class)
+                .withSelection("moduleId = ?", String.valueOf(moduleId))
+                .get();
+        module.setComplete(true);
+    }
+
+
+    // Request Helper Methods (Add , Delete and check if exists)
+
+    public void addRequest(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
         subTemp.setSubjectCRN(subjectId);
         subTemp.setSubjectName(subjectName);
         cupboard().withDatabase(db).put(subTemp);
     }
+
 
     public void deleteRequest(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
@@ -93,25 +133,26 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
         cupboard().withDatabase(db).put(subTemp);
     }
 
-    public boolean doesSubjectExist(int subjectId) {
 
-        MySubjects subject;
-        subject = cupboard().withDatabase(db)
-                            .query(MySubjects.class)
-                            .withSelection("subjectCRN = ?", String.valueOf(subjectId))
-                            .get();
-        if (subject != null)
-            return true;
-        else
-            return false;
-    }
 //    public boolean doesRequestExist(int moduleId, int userId){}
 //
-//    public boolean doesModuleExist(int moduleId){}
 
+    public boolean doesModulesExist(int subjectId) {
+        MyModules module = cupboard().withDatabase(db)
+                .query(MyModules.class)
+                .withSelection("subjectCRN = ?", String.valueOf(subjectId))
+                .get();
+        if (module != null)
+            return true;
+        return false;
+    }
+
+    public void deleteModulesBySubjectId(int subjectId){
+        cupboard().withDatabase(db).delete(MyModules.class, "subjectCRN = ?", String.valueOf(subjectId));
+
+    }
 //    public String getModuleNameById(int moduleId){}
-//
-//
+
 //  public String getModuleNameById(int moduleId){}
 //
 //    public String getSubjectNameById(int subjectId){}

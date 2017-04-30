@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.ModuleAdapter;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.Module;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.web.services.ModuleService;
@@ -30,15 +31,17 @@ import retrofit2.Response;
 public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.ItemClickCallback {
 
 
+    @BindView(R.id.list_module)
+    RecyclerView recyclerView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     private static final String TAG = "ModuleActivity";
     private static int uid;
     private static int subjectId;
-    private HashSet<Module> moduleList;
     private static ArrayList<Module> mod;
     private ModuleAdapter moduleAdapter;
     private LinearLayoutManager linearLayoutManager;
-    @BindView(R.id.list_module) RecyclerView recyclerView;
-    @BindView(R.id.toolbar) Toolbar toolbar;
+    private LocalDatabaseHelper dbHelper;
 
 
     @Override
@@ -47,33 +50,50 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
         setContentView(R.layout.activity_module);
         ButterKnife.bind(this);
 
+        // initialize local database
+        dbHelper = new LocalDatabaseHelper(this);
+
         Log.i(TAG, "Redirected to Module activity");
         uid = getIntent().getIntExtra("userId", 0);
-        subjectId = getIntent().getIntExtra("subjectId",0);
+        subjectId = getIntent().getIntExtra("subjectId", 0);
 //        Toast.makeText(getBaseContext(), "Subject id" + subjectId, Toast.LENGTH_LONG).show();
 
-        //Load modules for the particular subject
-        loadModules(uid,subjectId);
 
-        linearLayoutManager= new LinearLayoutManager(this);
+        //Load modules for the particular subject
+        loadModules(uid, subjectId);
+
+        linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
     }
 
-    private void loadModules(int uid, final int subjectId) {
 
+    private void loadModules(int uid, final int subjectId) {
+        dbHelper.open();
         ModuleService.Factory.getInstance().getModules(uid, subjectId).enqueue(new Callback<HashSet<Module>>() {
             @Override
             public void onResponse(Call<HashSet<Module>> call, Response<HashSet<Module>> response) {
                 Log.i(TAG, "Getting module list");
                 Log.i(TAG, response.toString());
-                Set<Module> moduleList = new HashSet<Module>(response.body());
-                for(Module module: moduleList)
-                    Log.i(TAG, module.getModuleName());
+                Set<Module> moduleList = new HashSet<>(response.body());
                 mod = new ArrayList<>(moduleList);
                 updateAdapter(mod);
+                //check if the subject contains any modules
+                if (!mod.isEmpty()) {
+                    //check if the local db already has modules for the given subject
+                    if (!dbHelper.doesModulesExist(subjectId)) {
+                        for (Module module : moduleList) {
+                            Log.i(TAG, module.getModuleName());
+                            dbHelper.addModule(module.getModuleId(), module.getModuleName(), subjectId);
+                        }
+                        Log.i(TAG, "Modules added to local db successfully " + subjectId);
+                    } else
+                        Log.i(TAG, "Modules exist for the subject " + subjectId);
+                } else
+                    Log.i(TAG, "Modules empty for the given subject");
             }
+
 
             @Override
             public void onFailure(Call<HashSet<Module>> call, Throwable t) {
@@ -85,24 +105,21 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
     }
 
     private void updateAdapter(ArrayList<Module> modules) {
-        moduleAdapter = new ModuleAdapter(this, modules,uid);
+        moduleAdapter = new ModuleAdapter(this, modules, uid);
         recyclerView.setAdapter(moduleAdapter);
         moduleAdapter.setItemClickCallback(this);
     }
-
-
-
 
 
     @Override
     public void OnItemClick(int p) {
         final Module moduleClicked = mod.get(p);
         final int moduleId = moduleClicked.getModuleId();
-        ModuleService.Factory.getInstance().getStudents(uid,subjectId, moduleId ).enqueue(new Callback<List<UserDetails>>() {
+        ModuleService.Factory.getInstance().getStudents(uid, subjectId, moduleId).enqueue(new Callback<List<UserDetails>>() {
             @Override
             public void onResponse(Call<List<UserDetails>> call, Response<List<UserDetails>> response) {
                 Log.i(TAG, "Getting Student list for the module " + moduleClicked.getModuleName());
-                Log.i(TAG,response.message());
+                Log.i(TAG, response.message());
                 List<UserDetails> studentList = response.body();
                 onSuccess(uid, studentList, moduleId);
 
@@ -119,22 +136,26 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
 
     @Override
     public void OnModuleCompleteClick(int p) {
-    //        Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
-            Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
-            onModuleCompletion(p);
-            UserDetails userTemp = new UserDetails();
-            userTemp.setUserId(uid);
-            mod.get(p).getUser().add(userTemp);
-            moduleAdapter.notifyDataSetChanged();
+        //        Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
+        Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
+        onModuleCompletion(p);
+        UserDetails userTemp = new UserDetails();
+        userTemp.setUserId(uid);
+        mod.get(p).getUser().add(userTemp);
+        moduleAdapter.notifyDataSetChanged();
     }
 
     private void onModuleCompletion(int p) {
         final Module module = mod.get(p);
-        ModuleService.Factory.getInstance().completedModule(uid,subjectId,module).enqueue(new Callback<Void>() {
+        ModuleService.Factory.getInstance().completedModule(uid, subjectId, module).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, "Module completed = " + module.getModuleName());
-                Toast.makeText(getBaseContext(),"Module completed = " + module.getModuleName(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Module completed = " + module.getModuleName(), Toast.LENGTH_LONG).show();
+                //setting module completed in local db
+                dbHelper.open();
+                dbHelper.moduleCompleted(module.getModuleId());
+                Log.i(TAG, module.getModuleName() + " marked completed in local db");
             }
 
             @Override
@@ -146,7 +167,7 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
     }
 
 
-    public void onSuccess(int uid , List<UserDetails> studentList , int moduleId) {
+    public void onSuccess(int uid, List<UserDetails> studentList, int moduleId) {
         Intent intent = new Intent(getBaseContext(), StudentActivity.class);
         intent.putExtra("studentList", Parcels.wrap(studentList));
         intent.putExtra("uid", uid);

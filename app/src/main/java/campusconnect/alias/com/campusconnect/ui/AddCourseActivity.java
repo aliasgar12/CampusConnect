@@ -411,6 +411,8 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         String subjectName = subjectList.get(p).getSubjectName();
         Toast.makeText(getBaseContext(), subjectName + " added. ", Toast.LENGTH_LONG).show();
         addSubject(p);
+
+        //not applicable anymore after applying local db
         UserDetails userTemp = new UserDetails();
         userTemp.setUserId(uid);
         subjectList.get(p).getStudentList().add(userTemp);
