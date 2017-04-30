@@ -86,7 +86,8 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
             dbHelper = new LocalDatabaseHelper(getContext());
             db = dbHelper.getWritableDatabase();
             Log.i(TAG, "Local Database initialized");
-        }
+        }else
+            Log.i(TAG, "Database Exist");
 
     }
 

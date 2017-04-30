@@ -19,6 +19,7 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "localDatabase.db";
     private static final int DATABASE_VERSION = 1;
+    private SQLiteDatabase db;
 
 
     public LocalDatabaseHelper(Context context) {
@@ -49,15 +50,69 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-//    public String getModuleNameById(int moduleId){}
-//
-//    public String getSubjectNameById(int subjectId){}
-//
-//    public boolean doesSubjectExist(int subjectId){}
-//
+    public void open(){
+        db= this.getWritableDatabase();
+    }
+
+    public void addSubject(int subjectId, String subjectName){
+        MySubjects subTemp = new MySubjects();
+        subTemp.setSubjectCRN(subjectId);
+        subTemp.setSubjectName(subjectName);
+        cupboard().withDatabase(db).put(subTemp);
+    }
+
+    public void addModule(int subjectId, String subjectName){
+        MySubjects subTemp = new MySubjects();
+        subTemp.setSubjectCRN(subjectId);
+        subTemp.setSubjectName(subjectName);
+        cupboard().withDatabase(db).put(subTemp);
+    }
+
+    public void addRequest(int subjectId, String subjectName){
+        MySubjects subTemp = new MySubjects();
+        subTemp.setSubjectCRN(subjectId);
+        subTemp.setSubjectName(subjectName);
+        cupboard().withDatabase(db).put(subTemp);
+    }
+
+    public void deleteSubject(int subjectId, String subjectName){
+        MySubjects subTemp = new MySubjects();
+        subTemp.setSubjectCRN(subjectId);
+        subTemp.setSubjectName(subjectName);
+        cupboard().withDatabase(db).put(subTemp);
+    }
+
+    public void deleteModule(int subjectId, String subjectName){
+        MySubjects subTemp = new MySubjects();
+        subTemp.setSubjectCRN(subjectId);
+        subTemp.setSubjectName(subjectName);
+        cupboard().withDatabase(db).put(subTemp);
+    }
+
+    public void deleteRequest(int subjectId, String subjectName){
+        MySubjects subTemp = new MySubjects();
+        subTemp.setSubjectCRN(subjectId);
+        subTemp.setSubjectName(subjectName);
+        cupboard().withDatabase(db).put(subTemp);
+    }
+
+    public boolean doesSubjectExist(int subjectId){
+
+        MySubjects subject;
+        subject = cupboard().withDatabase(db)
+                            .query(MySubjects.class)
+                            .withSelection( "subjectCRN = ?", String.valueOf(subjectId))
+                            .get();
+        if(subject != null)
+            return true;
+        else
+            return false;
+    }
 //    public boolean doesRequestExist(int moduleId, int userId){}
 //
 //    public boolean doesModuleExist(int moduleId){}
 
-
+//    public String getModuleNameById(int moduleId){}
+//
+//    public String getSubjectNameById(int subjectId){}
 }

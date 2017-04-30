@@ -2,6 +2,7 @@ package campusconnect.alias.com.campusconnect.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.AddSubjectAdapter;
 import campusconnect.alias.com.campusconnect.database.DatabaseHelper;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.College;
 import campusconnect.alias.com.campusconnect.model.Department;
 import campusconnect.alias.com.campusconnect.model.Subject;
@@ -45,6 +47,8 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     private List<Department> deptList;
     private List<College> collegeList;
     private DatabaseHelper db;
+    private LocalDatabaseHelper dbHelper;
+    private SQLiteDatabase ldb;
     private Handler handler;
     private Handler recyclerViewHandler;
     private List<Subject> subjectList = new ArrayList<>();
@@ -88,6 +92,9 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             Log.i(TAG, "Loading college spinner without creating db");
             loadSpinnerCollege();
         }
+
+        //initialize localdb
+        dbHelper = new LocalDatabaseHelper(getApplicationContext());
 
         //College Spinner
         spinnerCollege.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
@@ -402,13 +409,14 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 
     @Override
     public void OnSubjectAddIconClick(int p) {
-        Toast.makeText(getBaseContext(),subjectList.get(p).getSubjectName() + " added. ", Toast.LENGTH_LONG).show();
-        Log.i(TAG, "Subject Added = " + subjectList.get(p).getSubjectName());
+        String subjectName =  subjectList.get(p).getSubjectName();
+        Toast.makeText(getBaseContext(),subjectName + " added. ", Toast.LENGTH_LONG).show();
         addSubject(p);
         UserDetails userTemp = new UserDetails();
         userTemp.setUserId(uid);
         subjectList.get(p).getStudentList().add(userTemp);
         addSubjectAdapter.notifyDataSetChanged();
+
     }
 
 
@@ -421,6 +429,7 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, "Subject added : " + subject.getSubjectName());
                 Toast.makeText(getBaseContext(),"Subject added : " + subject.getSubjectName(),Toast.LENGTH_LONG).show();
+                addSubjectToLocalDb(subject.getSubjectCRN(), subject.getSubjectName());
             }
 
             @Override
@@ -429,6 +438,15 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
                 Log.i(TAG, t.getMessage());
             }
         });
+    }
+
+    private void addSubjectToLocalDb(int subjectCRN, String subjectName) {
+        dbHelper.open();
+        if(!dbHelper.doesSubjectExist(subjectCRN)) {
+            dbHelper.addSubject(subjectCRN, subjectName);
+            Log.i(TAG, subjectName + " added to local db");
+        }else
+            Log.i(TAG, subjectName +" already exist in local db");
     }
 }
 
