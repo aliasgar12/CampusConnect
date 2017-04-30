@@ -50,60 +50,57 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void open(){
-        db= this.getWritableDatabase();
+    public void open() {
+        db = this.getWritableDatabase();
     }
 
-    public void addSubject(int subjectId, String subjectName){
+    public void addSubject(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
         subTemp.setSubjectCRN(subjectId);
         subTemp.setSubjectName(subjectName);
         cupboard().withDatabase(db).put(subTemp);
     }
 
-    public void addModule(int subjectId, String subjectName){
+    public void addModule(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
         subTemp.setSubjectCRN(subjectId);
         subTemp.setSubjectName(subjectName);
         cupboard().withDatabase(db).put(subTemp);
     }
 
-    public void addRequest(int subjectId, String subjectName){
+    public void addRequest(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
         subTemp.setSubjectCRN(subjectId);
         subTemp.setSubjectName(subjectName);
         cupboard().withDatabase(db).put(subTemp);
     }
 
-    public void deleteSubject(int subjectId, String subjectName){
+    public void deleteSubject(int subjectId) {
+        cupboard().withDatabase(db).delete(MySubjects.class, "subjectCRN = ?", String.valueOf(subjectId));
+    }
+
+    public void deleteModule(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
         subTemp.setSubjectCRN(subjectId);
         subTemp.setSubjectName(subjectName);
         cupboard().withDatabase(db).put(subTemp);
     }
 
-    public void deleteModule(int subjectId, String subjectName){
+    public void deleteRequest(int subjectId, String subjectName) {
         MySubjects subTemp = new MySubjects();
         subTemp.setSubjectCRN(subjectId);
         subTemp.setSubjectName(subjectName);
         cupboard().withDatabase(db).put(subTemp);
     }
 
-    public void deleteRequest(int subjectId, String subjectName){
-        MySubjects subTemp = new MySubjects();
-        subTemp.setSubjectCRN(subjectId);
-        subTemp.setSubjectName(subjectName);
-        cupboard().withDatabase(db).put(subTemp);
-    }
-
-    public boolean doesSubjectExist(int subjectId){
+    public boolean doesSubjectExist(int subjectId) {
 
         MySubjects subject;
         subject = cupboard().withDatabase(db)
                             .query(MySubjects.class)
-                            .withSelection( "subjectCRN = ?", String.valueOf(subjectId))
+                            .withSelection("subjectCRN = ?", String.valueOf(subjectId))
                             .get();
-        if(subject != null)
+        if (subject != null)
             return true;
         else
             return false;
@@ -113,6 +110,9 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 //    public boolean doesModuleExist(int moduleId){}
 
 //    public String getModuleNameById(int moduleId){}
+//
+//
+//  public String getModuleNameById(int moduleId){}
 //
 //    public String getSubjectNameById(int subjectId){}
 }

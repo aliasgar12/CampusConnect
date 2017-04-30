@@ -18,12 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
 import org.parceler.Parcels;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
@@ -42,20 +44,21 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_OK;
 
 
-public class DashboardActivity extends Fragment implements SubjectAdapter.ItemClickCallback{
+public class DashboardActivity extends Fragment implements SubjectAdapter.ItemClickCallback {
 
 
-    @BindView(R.id.show_request) Button myRequest;
-    @BindView(R.id.add_courses) Button addCourse;
-    @BindView(R.id.listSubject) RecyclerView recyclerView;
+    @BindView(R.id.show_request)
+    Button myRequest;
+    @BindView(R.id.add_courses)
+    Button addCourse;
+    @BindView(R.id.listSubject)
+    RecyclerView recyclerView;
     private static final String TAG = "DashboardActivity";
     private static int uid;
     private ArrayList<Subject> subList;
     private SubjectAdapter subjectAdapter;
     private LinearLayoutManager linearLayoutManager;
     private LocalDatabaseHelper dbHelper;
-    private SQLiteDatabase db;
-
 
 
     @Override
@@ -72,22 +75,17 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
         subList = new ArrayList<>(subjectList);
 
 
-
         //setting the token for logged in user
-        if(!SharedPrefManager.getInstance(getContext()).getLoginStatus()) {
+        if (!SharedPrefManager.getInstance(getContext()).getLoginStatus()) {
             String app_token = SharedPrefManager.getInstance(getContext()).getToken();
             Log.i(TAG, "Setting token for new user");
             setToken(app_token);
         }
 
-        if(!doesDatabaseExist(getContext(), "localDatabase.db")) {
-            //initialize local database
-            Log.i(TAG, "Initializing Local Database");
-            dbHelper = new LocalDatabaseHelper(getContext());
-            db = dbHelper.getWritableDatabase();
-            Log.i(TAG, "Local Database initialized");
-        }else
-            Log.i(TAG, "Database Exist");
+        //initialize local database
+        Log.i(TAG, "Initializing Local Database");
+        dbHelper = new LocalDatabaseHelper(getContext());
+        Log.i(TAG, "Local Database initialized");
 
     }
 
@@ -97,14 +95,14 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         getActivity().setTitle("Dashboard");
 
         myRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent (getActivity(), RequestActivity.class);
-                intent.putExtra("uid",uid );
+                Intent intent = new Intent(getActivity(), RequestActivity.class);
+                intent.putExtra("uid", uid);
                 startActivity(intent);
             }
         });
@@ -114,7 +112,7 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddCourseActivity.class);
                 intent.putExtra("uid", uid);
-                startActivityForResult(intent,101);
+                startActivityForResult(intent, 101);
             }
         });
 
@@ -142,14 +140,14 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
 //        Log.i(TAG,String.valueOf(requestCode));
 //        Log.i(TAG, String.valueOf(resultCode));
 
-        if(requestCode == 101){
-            if (resultCode == RESULT_OK){
+        if (requestCode == 101) {
+            if (resultCode == RESULT_OK) {
                 Log.i(TAG, "Inside the result code section");
                 List<Subject> subjectAdded = Parcels.unwrap(data.getParcelableExtra("subjectAdded"));
                 //        Log.i(TAG, "adding subjects");
-                for(Subject sub: subjectAdded){
-                    if(!subList.contains(sub)) {
-                        Log.i(TAG, sub.getSubjectName()+ " not present");
+                for (Subject sub : subjectAdded) {
+                    if (!subList.contains(sub)) {
+                        Log.i(TAG, sub.getSubjectName() + " not present");
                         subList.add(sub);
                     }
                 }
@@ -166,7 +164,7 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
         TokenService.Factory.getInstance().setToken(user).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.code()==200) {
+                if (response.code() == 200) {
                     Log.i(TAG, "Token saved to server db");
                     Log.i(TAG, "Saving Login Status to Shared Pref");
                     SharedPrefManager.getInstance(getContext()).saveLoginStatus(true);
@@ -184,7 +182,7 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     public void OnItemClick(int p) {
         Intent intent = new Intent(getActivity(), ModuleActivity.class);
         intent.putExtra("subjectId", subList.get(p).getSubjectCRN());
-        intent.putExtra("userId",uid);
+        intent.putExtra("userId", uid);
         startActivity(intent);
     }
 
@@ -196,11 +194,22 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
 
     private void updateServerDb(int uid, final Subject subRemoved) {
 
+        final String subjectName = subRemoved.getSubjectName();
         SubjectService.Factory.getInstance().deleteSubject(uid, subRemoved).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.i(TAG, "Subject Removed" + subRemoved.getSubjectName());
-                Toast.makeText(getActivity(),"Subject Deleted" + subRemoved.getSubjectName(),Toast.LENGTH_LONG).show();
+                Log.i(TAG, "Subject Removed" + subjectName);
+                Toast.makeText(getActivity(), "Subject Deleted" + subjectName, Toast.LENGTH_LONG).show();
+                deleteSubjectFromLocalDb(subRemoved.getSubjectCRN(), subjectName);
+            }
+
+            private void deleteSubjectFromLocalDb(int subjectCRN, String subjectName) {
+                dbHelper.open();
+                if (dbHelper.doesSubjectExist(subjectCRN)) {
+                    dbHelper.deleteSubject(subjectCRN);
+                    Log.i(TAG, subjectName + " deleted from local db");
+                } else
+                    Log.i(TAG, subjectName + " does not exist in local db");
             }
 
             @Override
@@ -210,10 +219,11 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
         });
     }
 
+
     //check if the database exist in the localdb
     private static boolean doesDatabaseExist(Context context, String dbName) {
         File dbFile = context.getDatabasePath(dbName);
-        Log.i(TAG,dbFile.toString());
+        Log.i(TAG, dbFile.toString());
         return dbFile.exists();
     }
 

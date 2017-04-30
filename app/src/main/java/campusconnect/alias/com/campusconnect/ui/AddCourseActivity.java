@@ -43,7 +43,7 @@ import retrofit2.Response;
 
 public class AddCourseActivity extends AppCompatActivity implements AddSubjectAdapter.ItemClickCallback {
 
-    private static final String TAG ="AddCourseActivity";
+    private static final String TAG = "AddCourseActivity";
     private List<Department> deptList;
     private List<College> collegeList;
     private DatabaseHelper db;
@@ -61,11 +61,16 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     private static final int STEP_TWO_COMPLETE = 1;
     private static final int STEP_THREE_COMPLETE = 2;
     private static List<Subject> subjectAdded = new ArrayList<>();
-    @BindView(R.id.spinner_college) Spinner spinnerCollege;
-    @BindView(R.id.spinner_dept) Spinner spinnerDept;
-    @BindView(R.id.btn_search) Button btn_search;
-    @BindView(R.id.input_subjectId) EditText subjectCRN;
-    @BindView(R.id.list_add_subject) RecyclerView recyclerView;
+    @BindView(R.id.spinner_college)
+    Spinner spinnerCollege;
+    @BindView(R.id.spinner_dept)
+    Spinner spinnerDept;
+    @BindView(R.id.btn_search)
+    Button btn_search;
+    @BindView(R.id.input_subjectId)
+    EditText subjectCRN;
+    @BindView(R.id.list_add_subject)
+    RecyclerView recyclerView;
 
 
     @Override
@@ -74,26 +79,26 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         setContentView(R.layout.activity_add_course);
         ButterKnife.bind(this);
 
-        uid = getIntent().getIntExtra("uid",0);
+        uid = getIntent().getIntExtra("uid", 0);
 
         this.deleteDatabase("myDetails.db");
 
         //check if the database already exists
         Log.i(TAG, "Checking if the database exist");
-        boolean check = doesDatabaseExist(this,"myDetails.db");
+        boolean check = doesDatabaseExist(this, "myDetails.db");
 
-        if(!check) {
+        if (!check) {
 
             Log.i(TAG, "Database doesn't exist");
             loadFromServer();
 
-        }else {
+        } else {
             //loading college spinner and dept spinner from localdb
             Log.i(TAG, "Loading college spinner without creating db");
             loadSpinnerCollege();
         }
 
-        //initialize localdb
+        //initialize local db
         dbHelper = new LocalDatabaseHelper(getApplicationContext());
 
         //College Spinner
@@ -137,13 +142,13 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             @Override
             public void onClick(View v) {
                 String subCRN = subjectCRN.getText().toString();
-                if(!(subCRN.isEmpty())) {
+                if (!(subCRN.isEmpty())) {
                     getSubjectByCrn(subCRN);
-                }else if(collegeId == -1){
+                } else if (collegeId == -1) {
                     Toast.makeText(getBaseContext(), "Please Enter College details", Toast.LENGTH_LONG).show();
-                }else if(deptId == -1){
+                } else if (deptId == -1) {
                     getSubjectsByCollege();
-                }else{
+                } else {
                     getSubjectsByCollegeDept();
                 }
 
@@ -156,7 +161,8 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
                 switch (msg.what) {
                     case STEP_ONE_COMPLETE:
                         updateAdapter();
-                }}
+                }
+            }
         };
 
 
@@ -178,10 +184,8 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     }
 
 
-
-
     private void updateAdapter() {
-        if(subjectList != null) {
+        if (subjectList != null) {
             linearLayoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(linearLayoutManager);
             addSubjectAdapter = new AddSubjectAdapter(this, subjectList, uid);
@@ -198,11 +202,11 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
                     public void onResponse(Call<Subject> call, Response<Subject> response) {
                         Log.i(TAG, "Getting Subjects by subject CRN");
                         Subject subject = response.body();
-                        if(subject != null) {
+                        if (subject != null) {
                             subjectList.clear();
                             Log.i(TAG, "Fetched Subject = " + subject.getSubjectName());
                             subjectList.add(subject);
-                        }else
+                        } else
                             Toast.makeText(getBaseContext(), "Subject not found. Please check the CRN and try again.",
                                     Toast.LENGTH_LONG).show();
 
@@ -225,9 +229,9 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
                 .enqueue(new Callback<List<Subject>>() {
                     @Override
                     public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                        Log.i(TAG,"Getting subjects for college id = " + collegeId);
+                        Log.i(TAG, "Getting subjects for college id = " + collegeId);
                         subjectList = response.body();
-                        for(Subject sub : subjectList)
+                        for (Subject sub : subjectList)
                             Log.i(TAG, sub.getSubjectName());
                         // finished loading and informing recyclerViewHandler
                         Message msg = Message.obtain();
@@ -244,13 +248,13 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 
 
     private void getSubjectsByCollegeDept() {
-        SearchService.Factory.getInstance().getSubjectByCollegeDept(collegeId,deptId)
+        SearchService.Factory.getInstance().getSubjectByCollegeDept(collegeId, deptId)
                 .enqueue(new Callback<List<Subject>>() {
                     @Override
                     public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                        Log.i(TAG,"Getting subjects for college and dept");
+                        Log.i(TAG, "Getting subjects for college and dept");
                         subjectList = response.body();
-                        for(Subject sub : subjectList)
+                        for (Subject sub : subjectList)
                             Log.i(TAG, sub.getSubjectName());
                         // finished loading and informing recyclerViewHandler
                         Message msg = Message.obtain();
@@ -266,8 +270,7 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     }
 
 
-
-    private void loadSpinnerDept(String collegeName){
+    private void loadSpinnerDept(String collegeName) {
         //get collegeId for clicked college
         Log.i(TAG, "Getting Id for clicked college");
         db.open();
@@ -302,14 +305,12 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     }
 
 
-
     //check if the database exist in the localdb
     private static boolean doesDatabaseExist(Context context, String dbName) {
         File dbFile = context.getDatabasePath(dbName);
-        Log.i(TAG,dbFile.toString());
+        Log.i(TAG, dbFile.toString());
         return dbFile.exists();
     }
-
 
 
     private void loadFromServer() {
@@ -333,10 +334,10 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
                     case STEP_THREE_COMPLETE:
                         Log.i(TAG, "Creating db and loading college spinner");
                         loadSpinnerCollege();
-                }}
+                }
+            }
         };
     }
-
 
 
     private void loadCollegeList() {
@@ -345,7 +346,7 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             public void onResponse(Call<List<College>> call, Response<List<College>> response) {
                 Log.i(TAG, "Getting response from college resource");
                 collegeList = response.body();
-                for (College col: collegeList)
+                for (College col : collegeList)
                     Log.i(TAG, col.getCollegeName());
 
                 // finished first step and informing handler
@@ -362,14 +363,13 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     }
 
 
-
     private void loadDeptList() {
         AddCourseService.Factory.getInstance().getDeptList().enqueue(new Callback<List<Department>>() {
             @Override
             public void onResponse(Call<List<Department>> call, Response<List<Department>> response) {
                 Log.i(TAG, "Getting response from dept resource");
                 deptList = response.body();
-                for (Department dept: deptList)
+                for (Department dept : deptList)
                     Log.i(TAG, (dept.getName()));
 
                 // finished second step and informing handler
@@ -384,7 +384,6 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
             }
         });
     }
-
 
 
     //saving items (college and dept list to localdb)
@@ -409,27 +408,35 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 
     @Override
     public void OnSubjectAddIconClick(int p) {
-        String subjectName =  subjectList.get(p).getSubjectName();
-        Toast.makeText(getBaseContext(),subjectName + " added. ", Toast.LENGTH_LONG).show();
+        String subjectName = subjectList.get(p).getSubjectName();
+        Toast.makeText(getBaseContext(), subjectName + " added. ", Toast.LENGTH_LONG).show();
         addSubject(p);
         UserDetails userTemp = new UserDetails();
         userTemp.setUserId(uid);
         subjectList.get(p).getStudentList().add(userTemp);
-        addSubjectAdapter.notifyDataSetChanged();
-
     }
-
 
 
     private void addSubject(int p) {
         final Subject subject = subjectList.get(p);
         subjectAdded.add(subject);
-        SubjectService.Factory.getInstance().addSubject(uid,subject).enqueue(new Callback<Void>() {
+        SubjectService.Factory.getInstance().addSubject(uid, subject).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, "Subject added : " + subject.getSubjectName());
-                Toast.makeText(getBaseContext(),"Subject added : " + subject.getSubjectName(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Subject added : " + subject.getSubjectName(), Toast.LENGTH_LONG).show();
                 addSubjectToLocalDb(subject.getSubjectCRN(), subject.getSubjectName());
+            }
+
+            private void addSubjectToLocalDb(int subjectCRN, String subjectName) {
+                dbHelper.open();
+                if (!dbHelper.doesSubjectExist(subjectCRN)) {
+                    dbHelper.addSubject(subjectCRN, subjectName);
+                    Log.i(TAG, subjectName + " added to local db");
+                    addSubjectAdapter.notifyDataSetChanged();
+                    Log.i(TAG, "Data set changed");
+                } else
+                    Log.i(TAG, subjectName + " already exist in local db");
             }
 
             @Override
@@ -440,16 +447,7 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
         });
     }
 
-    private void addSubjectToLocalDb(int subjectCRN, String subjectName) {
-        dbHelper.open();
-        if(!dbHelper.doesSubjectExist(subjectCRN)) {
-            dbHelper.addSubject(subjectCRN, subjectName);
-            Log.i(TAG, subjectName + " added to local db");
-        }else
-            Log.i(TAG, subjectName +" already exist in local db");
-    }
 }
-
 
 
 //    /**
@@ -468,7 +466,6 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 //        }
 //        return checkDB != null;
 //    }
-
 
 
 //      onbackpressed()
