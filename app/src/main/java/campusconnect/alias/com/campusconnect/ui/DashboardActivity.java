@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 import org.parceler.Parcels;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.SubjectAdapter;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 import campusconnect.alias.com.campusconnect.firebase.MyFirebaseInstanceIdService;
 import campusconnect.alias.com.campusconnect.model.Subject;
@@ -40,16 +44,18 @@ import static android.app.Activity.RESULT_OK;
 
 public class DashboardActivity extends Fragment implements SubjectAdapter.ItemClickCallback{
 
-    private static final String TAG = "DashboardActivity";
-    private ArrayList<Subject> subList;
-    private SubjectAdapter subjectAdapter;
-//    private Button myRequest;
+
     @BindView(R.id.show_request) Button myRequest;
     @BindView(R.id.add_courses) Button addCourse;
     @BindView(R.id.listSubject) RecyclerView recyclerView;
-    private LinearLayoutManager linearLayoutManager;
+    private static final String TAG = "DashboardActivity";
     private static int uid;
-    private BroadcastReceiver broadcastReceiver;
+    private ArrayList<Subject> subList;
+    private SubjectAdapter subjectAdapter;
+    private LinearLayoutManager linearLayoutManager;
+    private LocalDatabaseHelper dbHelper;
+    private SQLiteDatabase db;
+
 
 
     @Override
@@ -58,11 +64,13 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
 
         subList = new ArrayList<>();
 
+        //Getting the subject list when user logs in.
+        Log.i(TAG, "Getting the subject list");
         Intent intent = getActivity().getIntent();
         uid = intent.getIntExtra("uid", 0);
         Set<Subject> subjectList = Parcels.unwrap(getActivity().getIntent().getParcelableExtra("subjectList"));
         subList = new ArrayList<>(subjectList);
-        Log.i(TAG, "Getting the subject list");
+
 
 
         //setting the token for logged in user
@@ -72,28 +80,16 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
             setToken(app_token);
         }
 
+        if(!doesDatabaseExist(getContext(), "localDatabase.db")) {
+            //initialize local database
+            Log.i(TAG, "Initializing Local Database");
+            dbHelper = new LocalDatabaseHelper(getContext());
+            db = dbHelper.getWritableDatabase();
+            Log.i(TAG, "Local Database initialized");
+        }
+
     }
 
-    private void setToken(String app_token) {
-        UserDetails user = new UserDetails();
-        user.setUserId(SharedPrefManager.getInstance(getContext()).getUserId());
-        user.setApp_token(app_token);
-        TokenService.Factory.getInstance().setToken(user).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.code()==200) {
-                    Log.i(TAG, "Token saved to server db");
-                    Log.i(TAG, "Saving Login Status to Shared Pref");
-                    SharedPrefManager.getInstance(getContext()).saveLoginStatus(true);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-
-            }
-        });
-    }
 
     @Nullable
     @Override
@@ -128,10 +124,8 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
         recyclerView.setAdapter(subjectAdapter);
         subjectAdapter.setItemClickCallback(this);
 
-
         return view;
     }
-
 
 
     @Override
@@ -164,6 +158,26 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     }
 
 
+    private void setToken(String app_token) {
+        UserDetails user = new UserDetails();
+        user.setUserId(SharedPrefManager.getInstance(getContext()).getUserId());
+        user.setApp_token(app_token);
+        TokenService.Factory.getInstance().setToken(user).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code()==200) {
+                    Log.i(TAG, "Token saved to server db");
+                    Log.i(TAG, "Saving Login Status to Shared Pref");
+                    SharedPrefManager.getInstance(getContext()).saveLoginStatus(true);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+    }
 
     @Override
     public void OnItemClick(int p) {
@@ -193,6 +207,13 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
                 Log.i(TAG, "Could not connect to REST server");
             }
         });
+    }
+
+    //check if the database exist in the localdb
+    private static boolean doesDatabaseExist(Context context, String dbName) {
+        File dbFile = context.getDatabasePath(dbName);
+        Log.i(TAG,dbFile.toString());
+        return dbFile.exists();
     }
 
 
