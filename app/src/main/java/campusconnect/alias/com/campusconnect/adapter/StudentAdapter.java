@@ -15,6 +15,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.ui.StudentActivity;
 
@@ -24,6 +25,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     private StudentActivity studentActivity;
     private ArrayList<UserDetails> studentList;
     private ItemClickCallback itemClickCallback;
+    private int moduleId;
+    private LocalDatabaseHelper dbHelper;
 
     public interface ItemClickCallback{
         void OnItemClick(int p);
@@ -33,9 +36,12 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
         this.itemClickCallback = itemClickCallback;
     }
 
-    public StudentAdapter(StudentActivity studentActivity, ArrayList<UserDetails> studentList){
+    public StudentAdapter(StudentActivity studentActivity, ArrayList<UserDetails> studentList , int moduleId){
         this.studentActivity = studentActivity;
         this.studentList = studentList;
+        this.moduleId = moduleId;
+        dbHelper = new LocalDatabaseHelper(studentActivity);
+        dbHelper.open();
     }
 
     @Override
@@ -48,7 +54,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
     public void onBindViewHolder(StudentAdapter.ViewHolder holder, int position) {
         UserDetails student = studentList.get(position);
         holder.studentName.setText(student.getUserName());
-    }
+        if(dbHelper.doesRequestExist(moduleId, student.getUserId()))
+            holder.requestIcon.setVisibility(View.VISIBLE);
+        }
 
     @Override
     public int getItemCount() {
@@ -70,8 +78,6 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.ViewHold
             requestIcon = (ImageView) itemView.findViewById(R.id.item_icon_request);
             container = itemView.findViewById(R.id.cont_root_student);
 
-//            studentName.setOnClickListener(this);
-//            requestIcon.setOnClickListener(this);
             container.setOnClickListener(this);
 
         }

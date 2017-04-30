@@ -1,6 +1,5 @@
 package campusconnect.alias.com.campusconnect.ui;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.StudentAdapter;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 import campusconnect.alias.com.campusconnect.model.Request;
 import campusconnect.alias.com.campusconnect.model.RequestId;
@@ -25,16 +25,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class StudentActivity extends AppCompatActivity  implements StudentAdapter.ItemClickCallback{
+public class StudentActivity extends AppCompatActivity implements StudentAdapter.ItemClickCallback {
 
 
     private static int fromId;
     private static int moduleId;
     private ArrayList<UserDetails> studentList;
-    @BindView(R.id.list_student) RecyclerView recyclerView;
+    @BindView(R.id.list_student)
+    RecyclerView recyclerView;
     private StudentAdapter studentAdapter;
     private LinearLayoutManager linearLayoutManager;
     private static final String TAG = "StudentActivity";
+    private LocalDatabaseHelper dbHelper;
 
 
     @Override
@@ -49,9 +51,12 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
 
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        studentAdapter = new StudentAdapter(this, studentList);
+        studentAdapter = new StudentAdapter(this, studentList , moduleId);
         recyclerView.setAdapter(studentAdapter);
         studentAdapter.setItemClickCallback(this);
+
+        //initialize local db
+        dbHelper = new LocalDatabaseHelper(this);
 
     }
 
@@ -59,7 +64,7 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
     public void OnItemClick(int p) {
         Log.i(TAG, "Student Name clicked");
         UserDetails userTo = studentList.get(p);
-        Toast.makeText(this, userTo.getUserName() + " clicked",Toast.LENGTH_LONG ).show();
+        Toast.makeText(this, userTo.getUserName() + " clicked", Toast.LENGTH_LONG).show();
         RequestId requestId = new RequestId();
         requestId.setFromUserId(fromId);
         requestId.setToUserId(studentList.get(p).getUserId());
@@ -72,21 +77,32 @@ public class StudentActivity extends AppCompatActivity  implements StudentAdapte
         sendRequest(request);
     }
 
-    private void sendRequest(Request request) {
+    private void sendRequest(final Request request) {
         RequestService.Factory.getInstance().addRequest(fromId, request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(TAG, response.message());
-                if(response.code()==200) {
+                if (response.code() == 200) {
                     Toast.makeText(getBaseContext(), "Request successfully created", Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "Request successfully created");
-                }else if (response.code()== 409){
+                    addRequestToLocalDb(request.getRequestId().getModuleId(), request.getRequestId().getToUserId());
+                } else if (response.code() == 409) {
                     Toast.makeText(getBaseContext(), "Request already exist", Toast.LENGTH_SHORT).show();
 
-                }else
+                } else
                     Toast.makeText(getBaseContext(), "Request Failed", Toast.LENGTH_SHORT).show();
 
             }
+
+            private void addRequestToLocalDb(int moduleId, int toUserId) {
+                dbHelper.open();
+                if (!dbHelper.doesRequestExist(moduleId, toUserId)) {
+                    dbHelper.addRequest(moduleId, toUserId);
+                    Log.i(TAG, "Request Added to local db");
+                } else
+                    Log.i(TAG, "Request Already exist in local db");
+            }
+
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {

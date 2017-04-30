@@ -16,6 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.RequestSentAdapter;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.Request;
 import campusconnect.alias.com.campusconnect.web.services.RequestService;
 import retrofit2.Call;
@@ -37,22 +38,34 @@ public class RequestSentActivity extends Fragment {
     private static int uid;
     private Handler handler;
     private static final int FETCH_COMPLETE = 1;
+    private LocalDatabaseHelper dbHelper;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //intitalize local db
+        dbHelper = new LocalDatabaseHelper(getContext());
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "OnCreateView Loaded");
         View rootView = inflater.inflate(R.layout.tab_request_sent, container, false);
+
+
         recyclerView = (RecyclerView)rootView.findViewById(R.id.list_request_sent);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        requestSentAdapter = new RequestSentAdapter(requests);
+        requestSentAdapter = new RequestSentAdapter(requests, getContext());
         recyclerView.setAdapter(requestSentAdapter);
         Log.i(TAG,"OnCreate ended");
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
+
 
         return rootView;
     }
@@ -141,10 +154,19 @@ public class RequestSentActivity extends Fragment {
                     Toast.makeText(getActivity(), "Request to " + request.getToUserName()+ " removed",Toast.LENGTH_SHORT ).show();
                     requests.remove(adapterPosition);
                     requestSentAdapter.notifyDataSetChanged();
+                    deleteRequestFromLocalDb(request.getRequestId().getModuleId(),request.getRequestId().getToUserId());
                 }
                 else {
                     Toast.makeText(getActivity(), "Failed to remove request",Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "Failed to remove request to " + request.getToUserName());
+                }
+            }
+
+            private void deleteRequestFromLocalDb(int moduleId, int toUserId) {
+                dbHelper.open();
+                if(dbHelper.doesRequestExist(moduleId, toUserId)) {
+                    dbHelper.deleteRequest(moduleId, toUserId);
+                    Log.i(TAG, "Request Deleted from local db");
                 }
             }
 

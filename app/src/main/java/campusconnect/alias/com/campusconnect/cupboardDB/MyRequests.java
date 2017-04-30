@@ -7,7 +7,6 @@ package campusconnect.alias.com.campusconnect.cupboardDB;
 public class MyRequests {
 
     private int moduleId;
-    private int fromUserId;
     private int toUserId;
     private String moduleName;
 
@@ -16,7 +15,6 @@ public class MyRequests {
     public int getModuleId() {
         return moduleId;
     }
-
     public void setModuleId(int moduleId) {
         this.moduleId = moduleId;
     }
@@ -24,24 +22,15 @@ public class MyRequests {
     public String getModuleName() {
         return moduleName;
     }
-
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
-    }
-
-    public int getFromUserId() {
-        return fromUserId;
-    }
-
-    public void setFromUserId(int fromUserId) {
-        this.fromUserId = fromUserId;
     }
 
     public int getToUserId() {
         return toUserId;
     }
-
     public void setToUserId(int toUserId) {
         this.toUserId = toUserId;
     }
+
 }

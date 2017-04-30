@@ -1,5 +1,6 @@
 package campusconnect.alias.com.campusconnect.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.Request;
 
 /**
@@ -19,10 +21,12 @@ public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.
 
     private ArrayList<Request> sentRequests = new ArrayList<>();
     private String TAG = "RequestSentAdapter";
+    private LocalDatabaseHelper dbHelper;
 
-
-    public RequestSentAdapter( ArrayList<Request> requests){
+    public RequestSentAdapter( ArrayList<Request> requests, Context context) {
         this.sentRequests = requests;
+        dbHelper = new LocalDatabaseHelper(context);
+        dbHelper.open();
     }
 
     @Override
@@ -35,8 +39,15 @@ public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.
 
     @Override
     public void onBindViewHolder(RequestSentAdapter.ViewHolder holder, int position) {
+
+        int moduleId = sentRequests.get(position).getRequestId().getModuleId();
         holder.userName.setText(sentRequests.get(position).getToUserName());
-        holder.moduleName.setText(String.valueOf(sentRequests.get(position).getRequestId().getModuleId()));
+        holder.subjectName.setText(dbHelper.getModuleNameById(moduleId));
+        holder.moduleName.setText(dbHelper.getSubjectNameByModuleId(moduleId));
+//        old way to access data
+//        holder.userName.setText(sentRequests.get(position).getToUserName());
+//        holder.subjectName.setText(String.valueOf(sentRequests.get(position).getRequestId().getModuleId()));
+//        holder.moduleName.setText(String.valueOf(sentRequests.get(position).getRequestId().getModuleId()));
     }
 
     @Override
@@ -56,7 +67,7 @@ public class RequestSentAdapter extends RecyclerView.Adapter<RequestSentAdapter.
             super(itemView);
 
             userName = (TextView) itemView.findViewById(R.id.item_request_userName);
-            subjectName = (TextView) itemView.findViewById(R.id.item_subject_name);
+            subjectName = (TextView) itemView.findViewById(R.id.item_request_subjectName);
             moduleName = (TextView) itemView.findViewById(R.id.item_request_moduleName);
             container = itemView.findViewById(R.id.cont_root_request);
 

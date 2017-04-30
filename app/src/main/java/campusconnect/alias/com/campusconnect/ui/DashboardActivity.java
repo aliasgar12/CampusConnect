@@ -67,6 +67,8 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
 
         subList = new ArrayList<>();
 
+        Log.i(TAG, SharedPrefManager.getInstance(getContext()).getToken());
+
         //Getting the subject list when user logs in.
         Log.i(TAG, "Getting the subject list");
         Intent intent = getActivity().getIntent();
@@ -84,7 +86,7 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
 
 
         //delete db for development purposes
-        getActivity().deleteDatabase("localDatabase.db");
+//        getActivity().deleteDatabase("localDatabase.db");
 
         //initialize local database
         Log.i(TAG, "Initializing Local Database");

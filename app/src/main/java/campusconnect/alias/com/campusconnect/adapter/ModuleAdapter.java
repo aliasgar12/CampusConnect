@@ -74,7 +74,6 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
     }
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView moduleName;
