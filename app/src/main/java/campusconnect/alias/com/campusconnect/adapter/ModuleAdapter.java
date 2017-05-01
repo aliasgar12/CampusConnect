@@ -22,50 +22,47 @@ import campusconnect.alias.com.campusconnect.ui.ModuleActivity;
  * Created by alias on 4/14/2017.
  */
 
-public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder>{
+public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder> {
 
     private ModuleActivity moduleActivity;
     private ArrayList<Module> moduleList;
     private ItemClickCallback itemClickCallback;
-    private int userId;
+    private LocalDatabaseHelper dbHelper;
+    private MyModules myMod;
 
-    public interface ItemClickCallback{
+    public interface ItemClickCallback {
         void OnItemClick(int p);
+
         void OnModuleCompleteClick(int p);
     }
 
-    public void setItemClickCallback(ItemClickCallback itemClickCallback){
+    public void setItemClickCallback(ItemClickCallback itemClickCallback) {
         this.itemClickCallback = itemClickCallback;
     }
 
-    public ModuleAdapter(ModuleActivity moduleActivity, ArrayList<Module> moduleList, int userId){
+    public ModuleAdapter(ModuleActivity moduleActivity, ArrayList<Module> moduleList) {
         this.moduleActivity = moduleActivity;
         this.moduleList = moduleList;
-        this.userId = userId;
+        dbHelper = new LocalDatabaseHelper(moduleActivity);
+        dbHelper.open();
     }
 
     @Override
     public ModuleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(moduleActivity).inflate(R.layout.item_module,parent, false);
+        View v = LayoutInflater.from(moduleActivity).inflate(R.layout.item_module, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ModuleAdapter.ViewHolder holder, int position) {
         Module module = moduleList.get(position);
-        Set<UserDetails> userDetailsSet = module.getUser();
         holder.moduleName.setText(module.getModuleName());
         holder.moduleId.setText(String.valueOf(module.getModuleId()));
-        int count = 0;
-        for(UserDetails user: userDetailsSet) {
-            if (user.getUserId() == userId)
-                count++;
-        }
-        if(count==0){
-            holder.completeIcon.setImageResource(R.drawable.ic_check_circle_white_36dp);
-        }else {
+        myMod = dbHelper.getModule(moduleList.get(position).getModuleId());
+        if (myMod.getIsComplete() == 1)
             holder.completeIcon.setImageResource(R.mipmap.icon_complete);
-        }
+        else
+            holder.completeIcon.setImageResource(R.drawable.ic_check_circle_white_36dp);
     }
 
     @Override
@@ -74,7 +71,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView moduleName;
         private TextView moduleId;
@@ -85,7 +82,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
             super(itemView);
 
             moduleName = (TextView) itemView.findViewById(R.id.item_module_name);
-            moduleId = (TextView)itemView.findViewById(R.id.item_moduleId) ;
+            moduleId = (TextView) itemView.findViewById(R.id.item_moduleId);
             completeIcon = (ImageView) itemView.findViewById(R.id.item_icon_complete);
             container = itemView.findViewById(R.id.cont_root_module);
 
@@ -97,11 +94,15 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
 
         @Override
         public void onClick(View v) {
-            if(v.getId()== R.id.item_module_name){
+            if (v.getId() == R.id.item_module_name) {
                 itemClickCallback.OnItemClick(getAdapterPosition());
-            }else if(v.getId()== R.id.item_icon_complete){
+            } else if (v.getId() == R.id.item_icon_complete) {
                 itemClickCallback.OnModuleCompleteClick(getAdapterPosition());
-//                notifyDataSetChanged();
+                myMod = dbHelper.getModule(moduleList.get(getAdapterPosition()).getModuleId());
+                if (myMod.getIsComplete() == 1)
+                    completeIcon.setImageResource(R.drawable.ic_check_circle_white_36dp);
+                else
+                    completeIcon.setImageResource(R.mipmap.icon_complete);
             }
         }
     }

@@ -56,10 +56,9 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
         dbHelper = new LocalDatabaseHelper(this);
 
         Log.i(TAG, "Redirected to Module activity");
+        // getting intent values from the subject activity
         uid = getIntent().getIntExtra("userId", 0);
         subjectId = getIntent().getIntExtra("subjectId", 0);
-//        Toast.makeText(getBaseContext(), "Subject id" + subjectId, Toast.LENGTH_LONG).show();
-
 
         //Load modules for the particular subject
         loadModules(uid, subjectId);
@@ -88,12 +87,20 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
                         for (Module module : moduleList) {
                             Log.i(TAG, module.getModuleName());
                             dbHelper.addModule(module.getModuleId(), module.getModuleName(), subjectId);
+                            setModuleStatusOnFirstFetch(module);
                         }
                         Log.i(TAG, "Modules added to local db successfully " + subjectId);
                     } else
                         Log.i(TAG, "Modules exist for the subject " + subjectId);
                 } else
                     Log.i(TAG, "Modules empty for the given subject");
+            }
+
+            private void setModuleStatusOnFirstFetch(Module module) {
+                for(UserDetails user : module.getUser()){
+                    if(user.getUserId() == ModuleActivity.uid)
+                        dbHelper.moduleCompleted(module.getModuleId());
+                }
             }
 
 
@@ -107,12 +114,14 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
     }
 
     private void updateAdapter(ArrayList<Module> modules) {
-        moduleAdapter = new ModuleAdapter(this, modules, uid);
+        moduleAdapter = new ModuleAdapter(this, modules);
+        Log.i(TAG, "Setting module adapter");
         recyclerView.setAdapter(moduleAdapter);
         moduleAdapter.setItemClickCallback(this);
     }
 
 
+    // on clicking the module name
     @Override
     public void OnItemClick(int p) {
         final Module moduleClicked = mod.get(p);
@@ -127,6 +136,14 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
 
             }
 
+            public void onSuccess(int uid, List<UserDetails> studentList, int moduleId) {
+                Intent intent = new Intent(getBaseContext(), StudentActivity.class);
+                intent.putExtra("studentList", Parcels.wrap(studentList));
+                intent.putExtra("uid", uid);
+                intent.putExtra("moduleId", moduleId);
+                startActivity(intent);
+            }
+
             @Override
             public void onFailure(Call<List<UserDetails>> call, Throwable t) {
                 Log.i(TAG, "Failed to retrieve user list for the module list" + moduleClicked.getModuleName());
@@ -136,31 +153,13 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
         });
     }
 
+
+    // on clicking the complete icon
     @Override
     public void OnModuleCompleteClick(int p) {
-        //        Toast.makeText(getBaseContext(),mod.get(p).getModuleName() + "completed", Toast.LENGTH_LONG).show();
         Log.i(TAG, "Clicked Module = " + mod.get(p).getModuleName());
         onModuleCompletion(p);
-        UserDetails userTemp = new UserDetails();
-        userTemp.setUserId(uid);
-        for (UserDetails user : mod.get(p).getUser())
-            Log.i(TAG, String.valueOf(user.getUserId()));
-        dbHelper.open();
-        MyModules modTemp = dbHelper.getModule(mod.get(p).getModuleId());
-        if (modTemp.getIsComplete() == 1) {
-            Set<UserDetails> users = mod.get(p).getUser();
-            Iterator<UserDetails> iterator = users.iterator();
-            while (iterator.hasNext()) {
-                UserDetails element = iterator.next();
-                if (element.equals(userTemp)) {
-                    iterator.remove();
-                }
-            }
-            Log.i(TAG, "removing user");
-        } else {
-            Log.i(TAG, "adding user");
-            mod.get(p).getUser().add(userTemp);
-        }
+
     }
 
     private void onModuleCompletion(int p) {
@@ -169,20 +168,17 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Log.i(TAG, "Module completed = " + module.getModuleName());
-                Toast.makeText(getBaseContext(), "Module completed = " + module.getModuleName(), Toast.LENGTH_LONG).show();
-                //setting module completed in local db
                 dbHelper.open();
+                //setting module status in local db as per response
                 Log.i(TAG, response.body());
                 if (response.body().equals("complete")) {
+                    Toast.makeText(getBaseContext(), "Module completed : " + module.getModuleName(), Toast.LENGTH_LONG).show();
                     dbHelper.moduleCompleted(module.getModuleId());
                     Log.i(TAG, module.getModuleName() + " marked completed in local db");
-                    Log.i(TAG, String.valueOf(dbHelper.getModule(module.getModuleId()).getIsComplete()));
-//                    moduleAdapter.notifyDataSetChanged();
                 } else {
+                    Toast.makeText(getBaseContext(), "Module marked incomplete : " + module.getModuleName(), Toast.LENGTH_LONG).show();
                     dbHelper.moduleIncomplete(module.getModuleId());
                     Log.i(TAG, module.getModuleName() + " marked incomplete in local db");
-                    Log.i(TAG, String.valueOf(dbHelper.getModule(module.getModuleId()).getIsComplete()));
-//                    moduleAdapter.notifyDataSetChanged();
                 }
                 Log.i(TAG, "changing data set");
                 moduleAdapter.notifyDataSetChanged();
@@ -192,17 +188,9 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.i(TAG, "Couldn't complete module. Please try again.");
+                moduleAdapter.notifyDataSetChanged();
                 Log.i(TAG, t.getMessage());
             }
         });
-    }
-
-
-    public void onSuccess(int uid, List<UserDetails> studentList, int moduleId) {
-        Intent intent = new Intent(getBaseContext(), StudentActivity.class);
-        intent.putExtra("studentList", Parcels.wrap(studentList));
-        intent.putExtra("uid", uid);
-        intent.putExtra("moduleId", moduleId);
-        startActivity(intent);
     }
 }

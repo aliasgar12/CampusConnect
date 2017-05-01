@@ -48,7 +48,6 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
     private List<College> collegeList;
     private DatabaseHelper db;
     private LocalDatabaseHelper dbHelper;
-    private SQLiteDatabase ldb;
     private Handler handler;
     private Handler recyclerViewHandler;
     private List<Subject> subjectList = new ArrayList<>();

@@ -1,17 +1,12 @@
 package campusconnect.alias.com.campusconnect.ui;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +27,6 @@ import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.SubjectAdapter;
 import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
-import campusconnect.alias.com.campusconnect.firebase.MyFirebaseInstanceIdService;
 import campusconnect.alias.com.campusconnect.model.Subject;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.web.services.SubjectService;
@@ -65,9 +59,9 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        subList = new ArrayList<>();
+        //Log.i(TAG, SharedPrefManager.getInstance(getContext()).getToken());
 
-        Log.i(TAG, SharedPrefManager.getInstance(getContext()).getToken());
+        subList = new ArrayList<>();
 
         //Getting the subject list when user logs in.
         Log.i(TAG, "Getting the subject list");
@@ -142,15 +136,11 @@ public class DashboardActivity extends Fragment implements SubjectAdapter.ItemCl
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "This is onActivityResult");
-//        Log.i(TAG,String.valueOf(requestCode));
-//        Log.i(TAG, String.valueOf(resultCode));
-
         if (requestCode == 101) {
             if (resultCode == RESULT_OK) {
                 Log.i(TAG, "Inside the result code section");
                 List<Subject> subjectAdded = Parcels.unwrap(data.getParcelableExtra("subjectAdded"));
-                //        Log.i(TAG, "adding subjects");
+                Log.i(TAG, "Adding newly added subject");
                 for (Subject sub : subjectAdded) {
                     if (!subList.contains(sub)) {
                         Log.i(TAG, sub.getSubjectName() + " not present");

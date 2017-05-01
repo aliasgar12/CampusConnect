@@ -102,7 +102,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(KEY_COLLEGE_NAME, college.getCollegeName());
             long id = sqLiteDatabase.insert(TABLE_COLLEGE, null, values);
             if (-1 != id) {
-                //Toast.makeText(mContext, "Insert Success " + id, Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "College Inserted = " + college.getCollegeName());
             }
         }
@@ -118,7 +117,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(KEY_COLLEGE_ID, dept.getCollegeId().getCollegeID());
             long id = sqLiteDatabase.insert(TABLE_DEPT, null, values);
             if (-1 != id) {
-                //Toast.makeText(mContext, "Insert Success " + id, Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "Department Inserted = " + dept.getName());
             }
         }
