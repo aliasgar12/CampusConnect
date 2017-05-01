@@ -1,5 +1,6 @@
 package campusconnect.alias.com.campusconnect.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -124,12 +125,17 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
 
     public void moduleCompleted(int moduleId) {
-        MyModules module;
-        module = cupboard().withDatabase(db)
-                .query(MyModules.class)
-                .withSelection("moduleId = ?", String.valueOf(moduleId))
-                .get();
-        module.setComplete(true);
+        ContentValues values = new ContentValues(1);
+        values.put("isComplete", 1);
+        cupboard().withDatabase(db).update(MyModules.class, values, "moduleId = ?", String.valueOf(moduleId));
+
+
+    }
+
+    public void moduleIncomplete(int moduleId) {
+        ContentValues values = new ContentValues(1);
+        values.put("isComplete", 0);
+        cupboard().withDatabase(db).update(MyModules.class, values, "moduleId = ?", String.valueOf(moduleId));
     }
 
     public boolean doesModulesExist(int subjectId) {
@@ -155,6 +161,16 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
         if (module != null)
             return module.getModuleName();
         return "";
+    }
+
+    public MyModules getModule(int moduleId) {
+        MyModules module = cupboard().withDatabase(db)
+                .query(MyModules.class)
+                .withSelection("moduleId = ?", String.valueOf(moduleId))
+                .get();
+        if (module != null)
+            return module;
+        return null;
     }
 
 

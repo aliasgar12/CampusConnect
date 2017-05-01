@@ -8,9 +8,11 @@ import campusconnect.alias.com.campusconnect.model.UserDetails;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -28,8 +30,8 @@ public interface ModuleService {
     Call<List<UserDetails>> getStudents(@Path("userId") int id , @Path("subjectId") int subId ,
                                         @Path("moduleId") int moduleId);
 
-    @POST("{userId}/subject/{subjectId}/module")
-    Call<Void> completedModule(@Path("userId") int userId, @Path("subjectId") int subId, @Body Module module);
+    @PUT("{userId}/subject/{subjectId}/module")
+    Call<String> completedModule(@Path("userId") int userId, @Path("subjectId") int subId, @Body Module module);
 
 
     class Factory {
@@ -39,6 +41,7 @@ public interface ModuleService {
         public static ModuleService getInstance() {
             if (service == null) {
                 Retrofit retrofit = new Retrofit.Builder()
+                        .addConverterFactory(ScalarsConverterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create())
                         .baseUrl(BASE_URL)
                         .build();

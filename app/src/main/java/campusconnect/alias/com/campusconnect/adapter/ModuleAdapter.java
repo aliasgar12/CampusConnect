@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.cupboardDB.MyModules;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.Module;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
 import campusconnect.alias.com.campusconnect.ui.ModuleActivity;
@@ -60,10 +62,8 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
                 count++;
         }
         if(count==0){
-            Log.i("Module Adapter ", "using incomplete icon");
             holder.completeIcon.setImageResource(R.drawable.ic_check_circle_white_36dp);
         }else {
-            Log.i("Module Adapter ", "using complete icon");
             holder.completeIcon.setImageResource(R.mipmap.icon_complete);
         }
     }
@@ -101,7 +101,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ViewHolder
                 itemClickCallback.OnItemClick(getAdapterPosition());
             }else if(v.getId()== R.id.item_icon_complete){
                 itemClickCallback.OnModuleCompleteClick(getAdapterPosition());
-                notifyDataSetChanged();
+//                notifyDataSetChanged();
             }
         }
     }

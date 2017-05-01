@@ -27,12 +27,10 @@ import retrofit2.Response;
 
 public class StudentActivity extends AppCompatActivity implements StudentAdapter.ItemClickCallback {
 
-
+    @BindView(R.id.list_student)RecyclerView recyclerView;
     private static int fromId;
     private static int moduleId;
     private ArrayList<UserDetails> studentList;
-    @BindView(R.id.list_student)
-    RecyclerView recyclerView;
     private StudentAdapter studentAdapter;
     private LinearLayoutManager linearLayoutManager;
     private static final String TAG = "StudentActivity";

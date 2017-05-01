@@ -81,7 +81,7 @@ public class AddCourseActivity extends AppCompatActivity implements AddSubjectAd
 
         uid = getIntent().getIntExtra("uid", 0);
 
-        this.deleteDatabase("myDetails.db");
+//        this.deleteDatabase("myDetails.db");
 
         //check if the database already exists
         Log.i(TAG, "Checking if the database exist");

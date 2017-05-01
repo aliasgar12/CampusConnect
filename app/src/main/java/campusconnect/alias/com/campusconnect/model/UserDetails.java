@@ -83,5 +83,13 @@ public class UserDetails {
 //		this.chatDetails = chatDetails;
 //	}
 
+    @Override
+    public boolean equals(Object other){
+        if (!(other instanceof UserDetails))
+            return false;
+        UserDetails otherUser = (UserDetails) other;
+        return this.getUserId() == (otherUser.getUserId());
+    }
+
 
 }

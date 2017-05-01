@@ -9,7 +9,7 @@ public class MyModules {
     private int moduleId;
     private int subjectCRN;
     private String moduleName;
-    boolean isComplete;
+    private int isComplete;
 
     public MyModules(){}
 
@@ -28,6 +28,7 @@ public class MyModules {
     public int getSubjectCRN() {return subjectCRN;}
     public void setSubjectCRN(int subjectCRN) {this.subjectCRN = subjectCRN;}
 
-    public boolean isComplete() {return isComplete;}
-    public void setComplete(boolean complete) {isComplete = complete;}
+    public int getIsComplete() {return isComplete;}
+    public void setIsComplete(int isComplete) {this.isComplete = isComplete;}
+
 }

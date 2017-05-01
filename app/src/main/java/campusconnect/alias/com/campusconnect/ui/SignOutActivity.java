@@ -31,8 +31,14 @@ public class SignOutActivity extends Fragment {
         Log.i(TAG, "Deleting Token");
         int uid = SharedPrefManager.getInstance(getContext()).getUserId();
         new ClearToken().execute(uid);
+
         Log.i(TAG, "Clearing Shared Preferences");
         SharedPrefManager.getInstance(getContext()).clear();
+
+        Log.i(TAG, "Deleting Local Databases");
+        getActivity().deleteDatabase("myDetails.db");
+        getActivity().deleteDatabase("localDatabase.db");
+        Log.i(TAG, "Complete");
 
     }
 

@@ -13,6 +13,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import campusconnect.alias.com.campusconnect.R;
 import campusconnect.alias.com.campusconnect.adapter.ModuleAdapter;
+import campusconnect.alias.com.campusconnect.cupboardDB.MyModules;
 import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.Module;
 import campusconnect.alias.com.campusconnect.model.UserDetails;
@@ -141,25 +143,54 @@ public class ModuleActivity extends AppCompatActivity implements ModuleAdapter.I
         onModuleCompletion(p);
         UserDetails userTemp = new UserDetails();
         userTemp.setUserId(uid);
-        mod.get(p).getUser().add(userTemp);
-        moduleAdapter.notifyDataSetChanged();
+        for (UserDetails user : mod.get(p).getUser())
+            Log.i(TAG, String.valueOf(user.getUserId()));
+        dbHelper.open();
+        MyModules modTemp = dbHelper.getModule(mod.get(p).getModuleId());
+        if (modTemp.getIsComplete() == 1) {
+            Set<UserDetails> users = mod.get(p).getUser();
+            Iterator<UserDetails> iterator = users.iterator();
+            while (iterator.hasNext()) {
+                UserDetails element = iterator.next();
+                if (element.equals(userTemp)) {
+                    iterator.remove();
+                }
+            }
+            Log.i(TAG, "removing user");
+        } else {
+            Log.i(TAG, "adding user");
+            mod.get(p).getUser().add(userTemp);
+        }
     }
 
     private void onModuleCompletion(int p) {
         final Module module = mod.get(p);
-        ModuleService.Factory.getInstance().completedModule(uid, subjectId, module).enqueue(new Callback<Void>() {
+        ModuleService.Factory.getInstance().completedModule(uid, subjectId, module).enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<String> call, Response<String> response) {
                 Log.i(TAG, "Module completed = " + module.getModuleName());
                 Toast.makeText(getBaseContext(), "Module completed = " + module.getModuleName(), Toast.LENGTH_LONG).show();
                 //setting module completed in local db
                 dbHelper.open();
-                dbHelper.moduleCompleted(module.getModuleId());
-                Log.i(TAG, module.getModuleName() + " marked completed in local db");
+                Log.i(TAG, response.body());
+                if (response.body().equals("complete")) {
+                    dbHelper.moduleCompleted(module.getModuleId());
+                    Log.i(TAG, module.getModuleName() + " marked completed in local db");
+                    Log.i(TAG, String.valueOf(dbHelper.getModule(module.getModuleId()).getIsComplete()));
+//                    moduleAdapter.notifyDataSetChanged();
+                } else {
+                    dbHelper.moduleIncomplete(module.getModuleId());
+                    Log.i(TAG, module.getModuleName() + " marked incomplete in local db");
+                    Log.i(TAG, String.valueOf(dbHelper.getModule(module.getModuleId()).getIsComplete()));
+//                    moduleAdapter.notifyDataSetChanged();
+                }
+                Log.i(TAG, "changing data set");
+                moduleAdapter.notifyDataSetChanged();
+
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
                 Log.i(TAG, "Couldn't complete module. Please try again.");
                 Log.i(TAG, t.getMessage());
             }
