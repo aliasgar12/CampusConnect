@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar"
-        />
+        layout="@layout/toolbar" />
 
     <!-- Spinner Dropdown -->
+
     <Spinner
         android:id="@+id/spinner_college"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dip"
         android:layout_marginLeft="8dip"
         android:layout_marginRight="8dip"
-        />
-
+        android:layout_marginTop="20dip" />
 
 
     <!-- Spinner Dropdown -->
@@ -28,37 +27,39 @@
         android:id="@+id/spinner_dept"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dip"
         android:layout_marginLeft="8dip"
         android:layout_marginRight="8dip"
-        />
+        android:layout_marginTop="20dip" />
 
 
     <!-- Email Label -->
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
-        <EditText android:id="@+id/input_subjectId"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/input_subjectId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
             android:gravity="center"
-            android:hint="Enter Subject CRN" />
+            android:hint="Enter Subject CRN"
+            android:inputType="number" />
     </android.support.design.widget.TextInputLayout>
 
     <!-- Add Button -->
-    <Button android:id="@+id/btn_search"
+    <Button
+        android:id="@+id/btn_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Search"
-        android:textSize="20sp"
+        android:layout_marginLeft="8dip"
+        android:layout_marginTop="8dip"
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
-        android:layout_marginLeft="8dip"
-        android:layout_marginTop="8dip"/>
+        android:text="Search"
+        android:textSize="20sp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_add_subject"

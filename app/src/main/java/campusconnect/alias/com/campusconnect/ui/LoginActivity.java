@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
             _signupLink.setVisibility(View.INVISIBLE);
             _uid.setText("0" + SharedPrefManager.getInstance(this).getUserId());
             _passwordText.setText(SharedPrefManager.getInstance(this).getPassword());
+            Log.i(TAG, SharedPrefManager.getInstance(this).getPassword());
             _loginButton.performClick();
         }
 
@@ -199,8 +200,8 @@ public class LoginActivity extends AppCompatActivity {
             _uid.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 4 || password.length() > 15) {
+            _passwordText.setError("between 4 and 15 alphanumeric characters");
             valid = false;
         } else {
             _passwordText.setError(null);

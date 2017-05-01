@@ -2,6 +2,7 @@ package campusconnect.alias.com.campusconnect.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import campusconnect.alias.com.campusconnect.R;
 

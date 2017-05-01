@@ -6,6 +6,10 @@
             android:id="@+id/nav_dashboard"
             android:icon="@drawable/ic_dashboard_white_18dp"
             android:title="Dashboard" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_account_circle_white_18dp"
+            android:title="My Profile" />
         <!--<item-->
             <!--android:id="@+id/nav_requests"-->
             <!--android:icon="@drawable/ic_help_white_18dp"-->

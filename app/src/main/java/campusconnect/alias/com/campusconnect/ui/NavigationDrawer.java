@@ -38,14 +38,25 @@ public class NavigationDrawer extends AppCompatActivity
 
         View v = navigationView.getHeaderView(0);
 
-        TextView name = (TextView)v.findViewById(R.id.nameView);
-        name.setText(SharedPrefManager.getInstance(this).getUserName());
+        TextView nameView = (TextView) v.findViewById(R.id.nameView);
+        nameView.setText(SharedPrefManager.getInstance(this).getUserName());
 
-        TextView uid = (TextView)v.findViewById(R.id.uidView);
-        uid.setText("U" + String.valueOf(SharedPrefManager.getInstance(this).getUserId()));
 
-        TextView email = (TextView)v.findViewById(R.id.emailView);
-        email.setText(SharedPrefManager.getInstance(this).getEmail());
+        String uid = String.valueOf(SharedPrefManager.getInstance(this).getUserId());
+        int prefixSize = 8 - uid.length();
+
+        if (prefixSize == 0)
+            uid = "U" + uid;
+        else if (prefixSize == 1)
+            uid = "U0" + uid;
+        else if (prefixSize == 2)
+            uid = "U00" + uid;
+
+        TextView uidView = (TextView) v.findViewById(R.id.uidView);
+        uidView.setText(uid);
+
+        TextView emailView = (TextView) v.findViewById(R.id.emailView);
+        emailView.setText(SharedPrefManager.getInstance(this).getEmail());
 
         displaySelectedScreen(R.id.nav_dashboard);
     }
@@ -95,11 +106,14 @@ public class NavigationDrawer extends AppCompatActivity
             case R.id.nav_studyRoom:
                 fragment = new BookStudyRoomActivity();
                 break;
+            case R.id.nav_profile:
+                fragment = new MyProfile();
+                break;
         }
 
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame,fragment);
+            ft.replace(R.id.content_frame, fragment);
             ft.commit();
 
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
