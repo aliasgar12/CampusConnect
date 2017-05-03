@@ -2,6 +2,7 @@ package campusconnect.alias.com.campusconnect.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,9 +10,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewFragment;
 import android.widget.TextView;
 
 import campusconnect.alias.com.campusconnect.R;
@@ -20,12 +24,18 @@ import campusconnect.alias.com.campusconnect.database.SharedPrefManager;
 public class NavigationDrawer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private String CURRENT_TAG = "";
+    private WebView myWebView ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        myWebView= new WebView(getBaseContext());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -61,15 +71,7 @@ public class NavigationDrawer extends AppCompatActivity
         displaySelectedScreen(R.id.nav_dashboard);
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,21 +101,26 @@ public class NavigationDrawer extends AppCompatActivity
         switch (id) {
             case R.id.nav_dashboard:
                 fragment = new DashboardActivity();
+                CURRENT_TAG = "Dashboard";
                 break;
             case R.id.nav_signOut:
                 fragment = new SignOutActivity();
+                CURRENT_TAG = "SignOut";
                 break;
             case R.id.nav_studyRoom:
                 fragment = new BookStudyRoomActivity();
+                CURRENT_TAG = "BookRoom";
                 break;
             case R.id.nav_profile:
                 fragment = new MyProfile();
+                CURRENT_TAG = "Profile";
                 break;
         }
 
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, fragment);
+            ft.replace(R.id.content_frame, fragment, CURRENT_TAG);
+            ft.addToBackStack(CURRENT_TAG);
             ft.commit();
 
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -129,5 +136,51 @@ public class NavigationDrawer extends AppCompatActivity
 
         displaySelectedScreen(id);
         return true;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        // Check it the currently existing fragment is a web view.
+        if (CURRENT_TAG == "BookRoom") {
+            Fragment frag = getSupportFragmentManager().findFragmentByTag(CURRENT_TAG);
+            View view = frag.getView();
+            myWebView = (WebView) view.findViewById(R.id.webView);
+        }
+
+        // if the existing view is web view and it contains previous pages in browsing history
+        // go back to the previous pages in the browsing history
+        if (myWebView.canGoBack()) {
+            myWebView.goBack();
+
+        }
+
+        // check if the navigation drawer is open . if it close the drawer
+        else if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+
+        // if the displayed fragment is dashboard , get out of the application
+        else if (CURRENT_TAG == "Dashboard") {
+            int i = getSupportFragmentManager().getBackStackEntryCount();
+            while (i > 0) {
+                getSupportFragmentManager().popBackStack();
+                i--;
+            }
+            super.onBackPressed();
+        }
+        // if the current fragment is not dashboard , go to the previous fragment in the fragment
+        // backStack and assigning the name of displayed fragment's tag to the CURRENT_TAG
+        else if (CURRENT_TAG != "Dashboard") {
+            getSupportFragmentManager().popBackStack();
+            int current = getSupportFragmentManager().getBackStackEntryCount();
+            FragmentManager.BackStackEntry frag = getSupportFragmentManager().getBackStackEntryAt(current - 2);
+            CURRENT_TAG = frag.getName();
+            Log.i("BackStackEntry ", CURRENT_TAG);
+        } else
+            super.onBackPressed();
     }
 }

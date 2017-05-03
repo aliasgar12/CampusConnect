@@ -28,6 +28,7 @@ public class SignOutActivity extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setTitle("Signing Out");
         Log.i(TAG, "Deleting Token");
         int uid = SharedPrefManager.getInstance(getContext()).getUserId();
         new ClearToken().execute(uid);
