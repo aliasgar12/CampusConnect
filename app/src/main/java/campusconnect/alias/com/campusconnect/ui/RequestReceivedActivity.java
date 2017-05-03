@@ -49,7 +49,7 @@ public class RequestReceivedActivity extends Fragment{
         recyclerView = (RecyclerView)rootView.findViewById(R.id.list_request_received);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        requestReceivedAdapter = new RequestReceivedAdapter(requests);
+        requestReceivedAdapter = new RequestReceivedAdapter(requests, getContext());
         recyclerView.setAdapter(requestReceivedAdapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());

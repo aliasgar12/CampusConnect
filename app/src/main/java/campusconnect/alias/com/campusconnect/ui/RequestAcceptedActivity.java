@@ -48,7 +48,7 @@ public class RequestAcceptedActivity extends Fragment {
         recyclerView = (RecyclerView)rootView.findViewById(R.id.list_request_accepted);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        requestAcceptedAdapter = new RequestAcceptedAdapter(requests);
+        requestAcceptedAdapter = new RequestAcceptedAdapter(getContext() , requests);
         recyclerView.setAdapter(requestAcceptedAdapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());

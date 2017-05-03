@@ -1,5 +1,6 @@
 package campusconnect.alias.com.campusconnect.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import campusconnect.alias.com.campusconnect.R;
+import campusconnect.alias.com.campusconnect.database.LocalDatabaseHelper;
 import campusconnect.alias.com.campusconnect.model.Request;
 
 /**
@@ -18,11 +20,14 @@ import campusconnect.alias.com.campusconnect.model.Request;
 public class RequestAcceptedAdapter extends RecyclerView.Adapter<RequestAcceptedAdapter.ViewHolder> {
 
     private ArrayList<Request> acceptedRequests = new ArrayList<>();
+    private LocalDatabaseHelper dbHelper;
     private String TAG = "RequestAcceptedAdapter";
 
 
-    public RequestAcceptedAdapter( ArrayList<Request> requests){
+    public RequestAcceptedAdapter(Context context, ArrayList<Request> requests){
         this.acceptedRequests = requests;
+        dbHelper = new LocalDatabaseHelper(context);
+        dbHelper.open();
     }
 
 
@@ -36,8 +41,12 @@ public class RequestAcceptedAdapter extends RecyclerView.Adapter<RequestAccepted
 
     @Override
     public void onBindViewHolder(RequestAcceptedAdapter.ViewHolder holder, int position) {
+        int moduleId = acceptedRequests.get(position).getRequestId().getModuleId();
         holder.userName.setText(acceptedRequests.get(position).getFromUserName());
-        holder.moduleName.setText(String.valueOf(acceptedRequests.get(position).getRequestId().getModuleId()));
+        holder.subjectName.setText(dbHelper.getModuleNameById(moduleId));
+        holder.moduleName.setText(dbHelper.getSubjectNameByModuleId(moduleId));
+//        holder.userName.setText(acceptedRequests.get(position).getFromUserName());
+//        holder.moduleName.setText(String.valueOf(acceptedRequests.get(position).getRequestId().getModuleId()));
     }
 
     @Override
@@ -57,7 +66,7 @@ public class RequestAcceptedAdapter extends RecyclerView.Adapter<RequestAccepted
             super(itemView);
 
             userName = (TextView) itemView.findViewById(R.id.item_request_userName);
-            subjectName = (TextView) itemView.findViewById(R.id.item_subject_name);
+            subjectName = (TextView) itemView.findViewById(R.id.item_request_subjectName);
             moduleName = (TextView) itemView.findViewById(R.id.item_request_moduleName);
             container = itemView.findViewById(R.id.cont_root_request);
 
